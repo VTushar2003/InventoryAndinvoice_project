@@ -1,8 +1,7 @@
 const mongoose = require("mongoose")
 const bcrypt = require('bcryptjs');
 
-
-const UserSchema = mongoose.Schema({
+const UserSchema =mongoose.Schema({
 
     name : { 
         type : String ,
@@ -34,8 +33,8 @@ const UserSchema = mongoose.Schema({
     },
     photo : {
         type : String,
-        required : [true,"please add a photo"],
-        default : "https://www.vecteezy.com/vector-art/8302514-eps10-white-vector-user-solid-icon-or-logo-in-simple-flat-trendy-modern-style-isolated-on-black-background",
+        /* required : [true,"please add a photo"], */
+        default : 'backend/public/defaultProfile.jpg',
     },
     bio : {
         type : String,

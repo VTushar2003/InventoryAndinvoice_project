@@ -1,27 +1,51 @@
-import React from 'react'
-import { BrowserRouter,Route,Routes} from 'react-router-dom'
-import Home from './pages/Home/Home'
-import Dashboard from './pages/Dashboard/Dashboard'
-import Product from './pages/Product/Product'
-import Invoice from './pages/Invoice/Invoice'
-import Profile from './pages/Profile/Profile'
-import Users from './pages/Users/Users'
+import React, { useEffect } from "react";
+import axios from "axios";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Home from "./pages/Home/Home";
+import Dashboard from "./pages/Dashboard/Dashboard";
+import Product from "./pages/Product/Product";
+import Invoice from "./pages/Invoice/Invoice";
+import Profile from "./pages/Profile/Profile";
+import Users from "./pages/Users/Users";
+import RegisterAdmin from "./pages/Register/RegisterAdmin";
+import LoginUser from "./pages/Register/LoginUser";
+import toast, { Toaster } from "react-hot-toast";
+import { useDispatch } from "react-redux";
+import { SET_LOGIN, SET_NAME } from "./redux/auth/AuthReducer"; 
+import { getLoginStatus } from "./services/Authservice";
+axios.defaults.withCredentials = true;
 
 const App = () => {
-  return (
-   <>
-   <BrowserRouter>
-   <Routes>
-      <Route path='/' element={<Home/>}/>
-      <Route path='/Dashboard' element={<Dashboard/>}/>
-      <Route path='/Product' element={<Product/>}/>
-      <Route path='/Invoice' element={<Invoice/>}/>
-      <Route path='/Users' element={<Users/>}/>
-      <Route path='/Profile' element={<Profile/>}/>
-   </Routes>
-   </BrowserRouter>
-   </>
-  )
-}
 
-export default App
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    async function loginStatus() {
+      const status = await getLoginStatus();
+      dispatch(SET_LOGIN(status));
+      console.log('login status',status)
+    }
+    loginStatus();
+  }, [dispatch]);
+
+
+  return (
+    <>
+      <Toaster />
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/Dashboard" element={<Dashboard />} />
+          <Route path="/register" element={<RegisterAdmin />} />
+          <Route path="/login" element={<LoginUser />} />
+          <Route path="/Product" element={<Product />} />
+          <Route path="/Invoice" element={<Invoice />} />
+          <Route path="/Users" element={<Users />} />
+          <Route path="/Profile" element={<Profile />} />
+        </Routes>
+      </BrowserRouter>
+    </>
+  );
+};
+
+export default App;

@@ -10,18 +10,23 @@ const errorMiddleWare = require ('./middleWare/errorMiddleWare');
 const cookieParser = require('cookie-parser');
 const productRouter = require("./routes/productRoute");
 const invoiceRouter = require("./routes/invoiceRoute");
+const { upload } = require("./utils/fileUpload");
+const { UploadImage } = require("./controllers/productController");
 /* const adminRouter = require("./routes/adminRoute"); */
 
 //middlewares
-app.use(cors())
+app.use(cors({
+    origin : ['http://localhost:5173','http://localhost:5174'],
+    credentials : true,
+}))
 app.use(express.json());
 app.use(cookieParser())
 app.use(express.urlencoded({extended : false}));
 app.use(bodyParser.json())
+app.use('/public', express.static(path.join(__dirname, 'public')));
 app.use("/upload", express.static(path.join(__dirname, "upload")));
 
 //route middleware
-/* app.use('/api/adminDetails',adminRouter) */
 app.use('/api/usersDetails',router);
 app.use("/api/products", productRouter);
 app.use("/api/invoice",invoiceRouter)

@@ -5,7 +5,7 @@ const productSchema = mongoose.Schema(
     user: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
-      ref: "usersDetails",
+      ref: "userDetails",
     },
     productId : {
        type : String,
@@ -23,12 +23,12 @@ const productSchema = mongoose.Schema(
       trim: true,
     },
     quantity: {
-      type: String,
+      type: Number,
       required: [true, "Please add a quantity"],
       trim: true,
     },
     price: {
-      type: String,
+      type: Number,
       required: [true, "Please add a price"],
       trim: true,
     },
@@ -39,11 +39,11 @@ const productSchema = mongoose.Schema(
     },
     supplier: {
         type: String,
-        trim: true
+        trim: true,
+        default : 'null'
     },
     image: {
-      data : Buffer,
-      contentType : String,
+     type :String,
     },
   },
   {

@@ -1,37 +1,66 @@
 import React from 'react';
-import { SettingOutlined, UserOutlined , ArrowRightOutlined} from '@ant-design/icons';
-import { Button, Dropdown, message, Space, Tooltip } from 'antd';
+import { SettingOutlined, UserOutlined } from '@ant-design/icons';
+import { Dropdown, Space } from 'antd';
+import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import toast from 'react-hot-toast';
+import axios from 'axios';
+import { SET_LOGIN, SET_NAME } from '../../redux/auth/AuthReducer';
 
-const handleMenuClick = (e) => {
-  console.log('click', e);
-};
-const items = [
-  {
-    label: 'Edit Profile',
-    key: '1',
-    icon: <UserOutlined />,
-  },
-  {
-    label: 'Change Password',
-    key: '2',
-    icon: <UserOutlined />,
-  },
-  {
-    label: 'Logout ->',
-    key: '3',
-    icon: <UserOutlined />,
-    danger: true,
-  },
-];
-const menuProps = {
-  items,
-  onClick: handleMenuClick,
-};
-const ButtonInfo = () => (
-  <Space wrap>
-    <Dropdown.Button className='font-[Sans]' menu={menuProps} placement="bottom" icon={<SettingOutlined />}>
+const ButtonInfo = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const handleMenuClick = async ({ key }) => {
+    if (key === '3') {
+      // Logout
+      try {
+        debugger;
+        await axios.get('http://localhost:3000/api/usersDetails/logout');
+        dispatch(SET_LOGIN(false))
+        dispatch(SET_NAME(""));
+        localStorage.removeItem("name"); 
+        toast.success('Logged out successfully');
+        navigate('/login');
+      } catch (error) {
+        const message =
+          (error.response && error.response.data && error.response.data.message) ||
+          error.message ||
+          error.toString();
+        toast.error(message);
+      }
+    }
+  };
+
+  const menuProps = {
+    items: [
+      {
+        label: <Link to="/edit-profile">Edit Profile</Link>,
+        key: '1',
+        icon: <UserOutlined />,
+      },
+      {
+        label: <Link to="/change-password">Change Password</Link>,
+        key: '2',
+        icon: <UserOutlined />,
+      },
+      {
+        label: 'Logout',
+        key: '3',
+        icon: <UserOutlined />,
+        danger: true,
+      },
+    ],
+    onClick: handleMenuClick,
+  };
+
+  return (
+    <Space wrap>
+      <Dropdown.Button className='font-[Sans]' menu={menuProps} placement="bottom" icon={<SettingOutlined />}>
         Settings
-    </Dropdown.Button>
-  </Space>
-);
+      </Dropdown.Button>
+    </Space>
+  );
+};
+
 export default ButtonInfo;

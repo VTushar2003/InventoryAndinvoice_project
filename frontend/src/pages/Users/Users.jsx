@@ -1,12 +1,13 @@
-import React from 'react'
-import DefaultLayout from '../../components/layout/Layout'
+import React from "react";
+import DefaultLayout from "../../components/layout/Layout";
+import UsersTable from "../../components/UsersTable/UsersTable";
 
 const Users = () => {
   return (
     <DefaultLayout>
-    <div>Users</div>
+        <UsersTable />
     </DefaultLayout>
-  )
-}
+  );
+};
 
-export default Users
+export default Users;

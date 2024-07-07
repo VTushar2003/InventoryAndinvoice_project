@@ -1,10 +1,13 @@
 import React from 'react'
 import DefaultLayout from '../../components/layout/Layout'
+import ProductData from '../../components/ProductData/ProductData';
+
 
 const Product = () => {
+ 
   return (
     <DefaultLayout>
-    <div>Product</div>
+           <ProductData/>
     </DefaultLayout>
   )
 }

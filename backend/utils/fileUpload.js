@@ -1,12 +1,12 @@
 const multer = require('multer');
-
+const path = require('path')
 // Set storage engine
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, 'upload');
+    cb(null, 'upload/');
   },
   filename: function (req, file, cb) {
-        cb(null,   new Date().toISOString().replace(/:/g, "-") + "-" + file.originalname)
+        cb(null, Date.now() + path.extname(file.originalname));
     }
 });
 
@@ -25,7 +25,6 @@ function fileFilter(req, file, cb) {
   }
 }
 
-const upload = multer({ storage : storage , fileFilter}).single('image');
 
 
 
@@ -42,6 +41,7 @@ const fileSizeFormatter = (bytes, decimal) => {
     parseFloat((bytes / Math.pow(1000, index)).toFixed(dm)) + " " + sizes[index]
   );
 };
+const upload = multer({ storage , fileFilter}).single('image');
 
 module.exports = { upload, fileSizeFormatter };
 
