@@ -16,7 +16,7 @@ const ProductDetails = ({ visible, onClose, product }) => {
             {product.image && (
               <>
                 <img
-                  className="w-full h-[30vh] border-4"
+                  className="w-full h-[30vh] object-cover border-4"
                   src={`http://localhost:3000/upload/${product.image}`}
                   alt={`product Name:${product.name}`}
                  /*  style={{ width: "100%" , height : '20vh' , objectFit : 'contain'}} */
@@ -35,8 +35,8 @@ const ProductDetails = ({ visible, onClose, product }) => {
             <strong>Category:</strong> {product.category}
           </p>
           <p className="text-black">
-            <strong>Quantity:</strong> {product.quantity}
-          </p>
+            <strong>Quantity: <span className="font-normal" style={{color : product.quantity > 10 ? 'green' : "red"}}>{product.quantity}</span></strong>
+          </p>  
           <p className="text-black">
             <strong>Price:</strong> {product.price}
           </p>
@@ -47,15 +47,15 @@ const ProductDetails = ({ visible, onClose, product }) => {
             <strong>Supplier:</strong> {product.supplier}
           </p>
           <p className="text-black">
-            <strong>Created At:</strong>{" "}
-            {new Date(product.createdAt).toLocaleString()}
+            <strong>Created At:</strong>
+            {new Date(product.createdAt).toLocaleString('en-IN')}
           </p>
           <p className="text-black">
-            <strong>Updated At:</strong>{" "}
-            {new Date(product.updatedAt).toLocaleString()}
+            <strong>Updated At:</strong>
+            {new Date(product.updatedAt).toLocaleString('en-IN')}
           </p>
           <p className="text-black">
-            <strong>Created By:</strong> {product.user.name}
+          <strong>Created By:</strong> {product.user && product.user.name ? product.user.name : 'user not found'}
           </p>
           </div>
         </div>

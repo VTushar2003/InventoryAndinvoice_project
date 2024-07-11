@@ -15,7 +15,7 @@ export const HideLink = ({ isLoggedIn }) => {
         const response = await axios.get(
           "http://localhost:3000/api/usersDetails/LoggedIn"
         );
-        // debugger;
+        // ;
         setLoggedInState(response.data.LoggedIn); // Update state
       } catch (error) {
         console.error(error);

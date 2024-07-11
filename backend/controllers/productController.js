@@ -65,6 +65,21 @@ const deleteProduct = asyncHandler(async (req, res) => {
     throw new Error("Product not found");
   }
 
+  const imagePath = path.join(__dirname,'../upload',product.image);
+fs.access(imagePath,fs.constants.F_OK,async(err)=>{
+  if(err){
+    console.error(err,'image not found')
+  }else{
+    fs.unlink(imagePath,(err)=>{
+      if (err) {
+        console.error("Error deleting image file:", err);
+      } else {
+        console.log("Image file deleted successfully");
+      }
+    })
+  }
+})
+
   await product.deleteOne();
   res.status(200).json({ message: "Product deleted." });
 });

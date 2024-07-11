@@ -2,13 +2,21 @@ import { Space, Table } from "antd";
 import React, { useEffect, useState } from "react";
 import { EditOutlined, EyeOutlined, DeleteOutlined } from "@ant-design/icons";
 import axios from "axios";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import EditUser from "./EditUser";
-import { updateUserData } from "../../redux/auth/AuthReducer";
+import { selectUser, updateUserData } from "../../redux/auth/AuthReducer";
+import ViewUserDetails from "./ViewUserDetails";
+import toast from "react-hot-toast";
+import AdduserData from "./AdduserData";
 
 const UsersTable = () => {
   const dispatch = useDispatch();
+  const currentUser = useSelector(selectUser);
   const [users, setUsers] = useState([]);
+
+  //view user data
+  const [viewuser, setViewuser] = useState(null);
+  const [viewModalVisible, setViewModalVisible] = useState(false);
 
   //edting user data
   const [editModalVisible, setEditModalVisible] = useState(false);
@@ -19,10 +27,13 @@ const UsersTable = () => {
 
   //fetch all users from the database
   const getAllUsers = async () => {
-    debugger;
+    ;
     try {
       const res = await axios.get(`${UserBaseUrl}/getallusers`);
-      const UsersKeys = res.data.map((user, index) => ({
+      const filterCurrentUser = res.data.filter(
+        (user) => user._id !== currentUser._id
+      );
+      const UsersKeys = filterCurrentUser.map((user, index) => ({
         ...user,
         key: user._id || index,
       }));
@@ -32,23 +43,61 @@ const UsersTable = () => {
       console.log("Error Fetching Products", error);
     }
   };
+  useEffect(() => {
+    if (currentUser._id) {
+      getAllUsers();
+    }
+  }, [currentUser._id]);
+  useEffect(() => {
+    getAllUsers();
+  }, []);
+
+  //delete user (admin only)
+  const DeleteUser = async (_id) => {
+    try {
+      const data = await axios.delete(`${UserBaseUrl}/deleteUser/${_id}`);
+      console.log("user deleted success", data);
+      toast.success(`User deleted successfully`);
+      getAllUsers();
+    } catch (error) {
+      console.log("error deleting user", error);
+    }
+  };
 
   //edit user details
   const EditUserData = async (formData) => {
-    debugger;
+    ;
     try {
-      await dispatch(updateUserData({ _id : editinguser._id, formData }));
-      console.log(formData)
+      await dispatch(updateUserData({ _id: editinguser._id, formData }));
+      console.log(formData);
       setEditModalVisible(false);
       getAllUsers();
     } catch (error) {
       console.error("Error updating user:", error);
     }
   };
-
-  useEffect(() => {
-    getAllUsers();
-  }, []);
+  //view user details
+  const ViewUserDetail = async (_id) => {
+    try {
+      const result = await axios.get(
+        `http://localhost:3000/api/usersDetails/getuser/${_id}`
+      );
+      setViewuser(result.data);
+      setViewModalVisible(true);
+      console.log("user details :", result.data);
+    } catch (error) {
+      console.error("Failed in getting product data", error);
+    }
+  };
+  //refresh after add
+  const RefrershAfterAdd = async () => {
+    try {
+      getAllUsers();
+      console.log("Refresh");
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const columns = [
     {
@@ -81,9 +130,16 @@ const UsersTable = () => {
       render: (text, record) => (
         <Space size="middle">
           {/* view User Detials */}
-          <button className="hover:text-blue-500">
+
+          <button
+            className="hover:text-blue-500"
+            onClick={() => {
+              ViewUserDetail(record._id);
+            }}
+          >
             <EyeOutlined />
           </button>
+
           {/* edit User Details */}
           <button
             className="hover:text-blue-500"
@@ -95,7 +151,10 @@ const UsersTable = () => {
             <EditOutlined />
           </button>
           {/* delete User */}
-          <button className="hover:text-red-500">
+          <button
+            className="hover:text-red-500"
+            onClick={() => DeleteUser(record._id)}
+          >
             <DeleteOutlined />
           </button>
         </Space>
@@ -106,7 +165,11 @@ const UsersTable = () => {
 
   return (
     <>
+      <div className="flex justify-end mb-[1rem]">
+        <AdduserData onUserAdded={RefrershAfterAdd} />
+      </div>
       <Table
+        bordered={true}
         columns={columns}
         dataSource={users}
         scroll={{ x: "100%" }}
@@ -116,6 +179,13 @@ const UsersTable = () => {
           pageSizeOptions: ["10", "20"],
         }}
       />
+      {viewuser && (
+        <ViewUserDetails
+          visible={viewModalVisible}
+          onClose={() => setViewModalVisible(false)}
+          user={viewuser}
+        />
+      )}
       {editinguser && (
         <EditUser
           visible={editModalVisible}

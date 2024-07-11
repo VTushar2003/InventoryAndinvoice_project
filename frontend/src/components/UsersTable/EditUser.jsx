@@ -1,4 +1,4 @@
-import { Button, Form, Input, Modal, Select, Space, Upload } from "antd";
+import { Button, Form, Input, Modal, Select, Upload } from "antd";
 import React, { useEffect, useState } from "react";
 import { UploadOutlined } from "@ant-design/icons";
 const { Option } = Select;
@@ -78,12 +78,11 @@ const EditUser = ({ visible, onClose, onSubmit, user }) => {
         <Form.Item
           name="phoneNumber"
           label="Contact Info"
-          rules={[{ required: true, message: "Please enter the phone number!" }]}
+          rules={[
+            { required: true, message: "Please enter the phone number!" },
+          ]}
         >
-          <Space>
-            <Input style={{ width: "20%" }} defaultValue="+91" />
-            <Input style={{ width: "80%" }} />
-          </Space>
+          <Input />
         </Form.Item>
         <Form.Item name="role" rules={[{ required: true }]} label="User Role">
           <Select placeholder="Select a role" value={user.role}>

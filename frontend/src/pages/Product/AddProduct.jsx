@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ProductForm from "./../../components/productForm/productForm";
 import { useDispatch } from "react-redux";
 import { createProduct, getProducts } from "../../redux/rootReducer";
 import axios from "axios";
+import toast from "react-hot-toast";
 
 const initialState = {
   productId: "",
@@ -15,9 +16,23 @@ const initialState = {
 const AddProduct = ({ onProductAdded }) => {
   const dispatch = useDispatch();
   const [product, setProduct] = useState(initialState);
-  const [productImage, setProductImage] = useState();
+  const [productImage, setProductImage] = useState([]);
   const [description, setDescription] = useState("");
+  const [existingProducts, setExistingProducts] = useState([]);
   const { name, category, price, quantity, supplier, productId } = product;
+
+  useEffect(() => {
+    const getexsistingProducts = async () => {
+      debugger;
+      try {
+        const res = await dispatch(getProducts());
+        setExistingProducts(res.payload);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    };
+    getexsistingProducts();
+  }, [dispatch]);
 
   const handleInputchange = (e) => {
     const { name, value } = e.target;
@@ -29,11 +44,17 @@ const AddProduct = ({ onProductAdded }) => {
     if (e.target.files) {
       const file = e.target.files[0];
       setProductImage(file);
-    } 
+    }
   };
 
-  const saveProduct = async (e) => {
-    e.preventDefault();
+  const isProductIdUnique = (productId) => {
+    return !existingProducts.some((product) => product.productId === productId);
+  };
+  const saveProduct = async () => {
+    if (!isProductIdUnique(product.productId)) {
+      toast.error("Product ID must be unique");
+      return;
+    }
     const formData = new FormData();
     formData.append("image", productImage ? productImage : null);
     formData.append("productId", productId);
@@ -67,6 +88,7 @@ const AddProduct = ({ onProductAdded }) => {
         handleImageChange={handleImageChange}
         handleInputchange={handleInputchange}
         saveProduct={saveProduct}
+        isProductIdUnique={isProductIdUnique}
       />
     </>
   );

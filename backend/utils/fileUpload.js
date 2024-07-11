@@ -9,7 +9,14 @@ const storage = multer.diskStorage({
         cb(null, Date.now() + path.extname(file.originalname));
     }
 });
-
+const ProfileStorage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'public/');
+  },
+  filename: function (req, file, cb) {
+        cb(null, Date.now() + path.extname(file.originalname));
+    }
+});
 
 //file filter
 // Check file type
@@ -42,6 +49,7 @@ const fileSizeFormatter = (bytes, decimal) => {
   );
 };
 const upload = multer({ storage , fileFilter}).single('image');
+const profile = multer({ storage: ProfileStorage , fileFilter}).single('photo');
 
-module.exports = { upload, fileSizeFormatter };
+module.exports = { upload,profile, fileSizeFormatter };
 

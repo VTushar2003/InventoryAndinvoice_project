@@ -10,6 +10,7 @@ const initialState = {
   isLoggedIn: false,
   name: name ? name : "",
   user: {
+    _id : "",
     name: "",
     email: "",
     phone: "",
@@ -22,7 +23,7 @@ const initialState = {
 export const updateUserData = createAsyncThunk(
   "usersDetails/updateUser",
   async (data, thunkAPI) => {
-    debugger;
+    ;
     try {
       const {_id, formData} = data;
       const response = await updateUser(_id,formData);
@@ -52,9 +53,10 @@ const authSlice = createSlice({
       state.name = action.payload;
     },
     SET_USER(state, action) {
-      debugger;
+      ;
       const profile = action.payload;
       console.log(profile)
+      state.user._id = profile._id
       state.user.name = profile.name;
       state.user.email = profile.email;
       state.user.phoneNumber = profile.phoneNumber;

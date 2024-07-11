@@ -16,7 +16,7 @@
   --light-blue: #1677FF;
 }
 h1,h2,h3,h4,h5,h6,p{
-    color: white;
+    color: black;
 }
 
 *{
@@ -71,3 +71,16 @@ html,body{
   .file:hover{
     border-color: #1677FF;
   }
+.ant-table-cell{
+  text-align: center !important;
+  padding: none;
+}
+.ant-descriptions-item-label{
+  background: #1677FF !important;
+  overflow: hidden;
+  color: white !important;
+}
+.ant-table-thead .ant-table-cell {
+  background-color: #1677FF !important;
+  color: white !important;
+}

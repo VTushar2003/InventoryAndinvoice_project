@@ -1,49 +1,80 @@
 import React, { useState } from "react";
-import { Button, Modal, Upload, Input } from "antd";
+import { Button, Modal, Upload, Input, Form } from "antd";
 import { PlusOutlined, UploadOutlined } from "@ant-design/icons";
 import toast from "react-hot-toast";
 
-const { TextArea } = Input; 
+const { TextArea } = Input;
+
 const ProductForm = ({
   product,
   description,
   setDescription,
   handleInputchange,
   handleImageChange,
+  productImage,
   saveProduct,
+  isProductIdUnique,
 }) => {
   const [open, setOpen] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
+  const [form] = Form.useForm();
 
-  
   const showModal = () => {
     setOpen(true);
   };
 
-  const handleOk = (e) => {
-    if (
-      !product.productId ||
-      !product.name ||
-      !product.category ||
-      !product.quantity ||
-      !product.price ||
-      !product.supplier ||
-      !description
-    ) {
-      toast.error("Fill Required Fields");
-      return;
-    } else {
+  const handleOk = async () => {
+    try {
+      await form.validateFields();
+      if(!isProductIdUnique(product.productId)){
+        form.setFields([
+          {
+            name : 'productId',
+            errors : ["product Id must be unique!"]
+          }
+        ]);
+        return;
+      }
       setConfirmLoading(true);
       setTimeout(() => {
         setOpen(false);
         setConfirmLoading(false);
       }, 2000);
-      saveProduct(e);
+      await saveProduct();
+    } catch (error) {
+      console.error("Validation Error:", error);
     }
   };
 
   const handleCancel = () => {
     setOpen(false);
+    form.resetFields()
+  };
+
+  const validateMessages = {
+    required: "${label} is required!",
+    types: {
+      number: "${label} must be a valid number!",
+    },
+    string: {
+      range: "${label} must be between ${min} and ${max} characters long.",
+    },
+  };
+
+  const customRules = {
+    validateImage: () => {
+      console.log(productImage)
+      if (productImage.length === 0 ) {
+        return Promise.reject("Image is required!");
+      }
+      return Promise.resolve();
+    },
+    validatePositiveNumber: (_, value) => {
+      if (value < 0) {
+        return Promise.reject("Must be a positive number!");
+      }
+      return Promise.resolve();
+    },
   };
 
   return (
@@ -58,83 +89,141 @@ const ProductForm = ({
         confirmLoading={confirmLoading}
         onCancel={handleCancel}
       >
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleOk(e);
-          }}
+        <Form
+          form={form}
+          onFinish={handleOk}
+          validateMessages={validateMessages}
           className="flex flex-col gap-2 font-[Sans] font-medium"
         >
           <label>
-            Upload Image <span>Support Formats : jpg,jpeg,png</span>
+            Upload Image <span>Support Formats : jpg, jpeg, png</span>
           </label>
-
-          <input className="file" type="file" onChange={handleImageChange}/>
-          <label>Enter Product Id</label>
-          <Input
-            placeholder="Enter Product Id"
-            type="text"
+          <Form.Item
+            name="image"
+            valuePropName="filelist"
+            getValueFromEvent={(e)=>e.filelist}
+            rules={[{ validator: customRules.validateImage }]}
+          >
+             <input className="file" max={1} type="file" onChange={handleImageChange}/>
+          </Form.Item>
+          <Form.Item
             name="productId"
-            value={product.productId}
-            onChange={handleInputchange}
-          />
-          <label>Enter Product Name</label>
-          <Input
-            placeholder="Enter Product Name"
-            type="text"
-            value={product.name}
+            label="Enter Product Id"
+            rules={[
+              { required: true },
+              {
+                validator: (_, value) =>
+                  isProductIdUnique(value)
+                    ? Promise.resolve()
+                    : Promise.reject("Product ID must be unique!"),
+              },
+            ]}
+          >
+            <Input
+              placeholder="Enter Product Id"
+              type="text"
+              name="productId"
+              value={product.productId}
+              onChange={handleInputchange}
+            />
+          </Form.Item>
+          <Form.Item
             name="name"
-            onChange={handleInputchange}
-          />
-          <label>Enter Product Category</label>
-          <Input
-            placeholder="Enter Product Category"
-            type="text"
-            value={product.category}
+            label="Enter Product Name"
+            rules={[{ required: true }]}
+          >
+            <Input
+              placeholder="Enter Product Name"
+              type="text"
+              value={product.name}
+              name="name"
+              onChange={handleInputchange}
+            />
+          </Form.Item>
+          <Form.Item
             name="category"
-            onChange={handleInputchange}
-          />
-          <label>Enter Quantity</label>
-          <Input
-            placeholder="Enter Quantity"
-            type="number"
-            value={product.quantity}
+            label="Enter Product Category"
+            rules={[{ required: true }]}
+          >
+            <Input
+              placeholder="Enter Product Category"
+              type="text"
+              value={product.category}
+              name="category"
+              onChange={handleInputchange}
+            />
+          </Form.Item>
+          <Form.Item
             name="quantity"
-            onChange={handleInputchange}
-          />
-          <label>Enter Price</label>
-          <Input
-            prefix="Rs"
-            type="number"
-            suffix="RUPEE"
-            placeholder="Enter Price"
+            label="Enter Quantity"
+            rules={[
+              { required: true },
+              {
+                validator: customRules.validatePositiveNumber,
+              },
+            ]}
+          >
+            <Input
+              placeholder="Enter Quantity"
+              type="number"
+              value={product.quantity}
+              name="quantity"
+              onChange={handleInputchange}
+            />
+          </Form.Item>
+          <Form.Item
             name="price"
-            onChange={handleInputchange}
-            value={product.price}
-          />
-          <label>Enter Supplier Name</label>
-          <Input
-            placeholder="Enter Supplier Name"
-            type="text"
-            onChange={handleInputchange}
+            label="Enter Price"
+            rules={[
+              { required: true },
+              {
+                validator: customRules.validatePositiveNumber,
+              },
+            ]}
+          >
+            <Input
+              prefix="Rs"
+              type="number"
+              suffix="RUPEE"
+              placeholder="Enter Price"
+              name="price"
+              onChange={handleInputchange}
+              value={product.price}
+            />
+          </Form.Item>
+          <Form.Item
             name="supplier"
-            value={product.supplier}
-          />
-          <label htmlFor="Description">Description</label>
-          <TextArea
-            onChange={(e) => setDescription(e.target.value)}
-            value={description}
+            label="Enter Supplier Name"
+            rules={[{ required: true }]}
+          >
+            <Input
+              placeholder="Enter Supplier Name"
+              type="text"
+              onChange={handleInputchange}
+              name="supplier"
+              value={product.supplier}
+            />
+          </Form.Item>
+          <Form.Item
             name="description"
-            showCount
-            maxLength={200}
-            placeholder="disable resize"
-            style={{
-              height: 120,
-              resize: "none",
-              marginBottom: "1rem",
-            }}
-          />
-        </form>
+            label="Description"
+            rules={[{ required: true }]}
+          >
+            <TextArea
+              onChange={(e) => setDescription(e.target.value)}
+              value={description}
+              name="description"
+              showCount
+              maxLength={200}
+              placeholder="Disable resize"
+              style={{
+                height: 120,
+                resize: "none",
+                marginBottom: "1rem",
+              }}
+            />
+          </Form.Item>
+        </Form>
       </Modal>
     </>
   );

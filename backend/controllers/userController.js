@@ -5,6 +5,8 @@ const bcrypt = require("bcryptjs");
 const Token = require("../model/tokenModule");
 const crypto = require("crypto");
 const sendEmail = require("../utils/sendEmail");
+const path = require("path");
+const fs = require("fs");
 
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "1d" });
@@ -66,6 +68,43 @@ const registerUser = asyncHandler(async (req, res) => {
     res.status(400);
     throw new Error("Invalid user data");
   }
+});
+
+//create user by admin only
+const createUser = asyncHandler(async (req, res) => {
+  const { name, email, password, role } = req.body;
+
+  if (!name || !email || !password || !role) {
+    res.status(400);
+    throw new Error("Please fill in all required fields");
+  }
+
+  if (password.length < 6) {
+    res.status(400);
+    throw new Error("Password must be at least 6 characters long");
+  }
+
+  // Check if the user already exists
+  let userExists = await usersDetails.findOne({ email });
+  if (userExists) {
+    res.status(400);
+    throw new Error("User already exists, try another email");
+  }
+
+  
+
+  // Create new user
+  const user = new usersDetails({
+    name,
+    email,
+    password,
+    role,
+  });
+
+  // Save user to the database
+  await user.save();
+
+  res.status(201).json({ message: "User created successfully", user });
 });
 
 // Login user
@@ -132,6 +171,39 @@ const logout = asyncHandler(async (req, res) => {
   });
 });
 
+//get userdetails by Id
+const getUserById = asyncHandler(async (req, res) => {
+  const user = await usersDetails.findById(req.params._id);
+
+  if (user) {
+    const {
+      _id,
+      name,
+      email,
+      photo,
+      bio,
+      phoneNumber,
+      role,
+      createdAt,
+      updatedAt,
+    } = user;
+    res.status(200).json({
+      _id,
+      name,
+      email,
+      photo,
+      bio,
+      phoneNumber,
+      role,
+      createdAt,
+      updatedAt,
+    });
+  } else {
+    res.status(404);
+    throw new Error("User not found");
+  }
+});
+
 // Get user details
 const getUser = asyncHandler(async (req, res) => {
   const user = await usersDetails.findById(req.user._id);
@@ -159,7 +231,6 @@ const LoggedIn = asyncHandler(async (req, res) => {
 
   // If no token is found, user is not logged in
   if (!token) {
-    console.log("here");
     return res.json({ LoggedIn: false });
   }
 
@@ -182,7 +253,7 @@ const LoggedIn = asyncHandler(async (req, res) => {
 
 // Update user details
 const updateUser = asyncHandler(async (req, res) => {
-  const { name, bio, photo, phoneNumber, role } = req.body;
+  const { name, bio, phoneNumber, role } = req.body;
   const { _id } = req.params;
   const user = await usersDetails.findById(_id);
 
@@ -190,10 +261,31 @@ const updateUser = asyncHandler(async (req, res) => {
     res.status(404);
     throw new Error("User not found");
   }
+  const userUpdatedData = {
+    name,
+    bio,
+    phoneNumber,
+    role,
+  };
+
+  if (req.file) {
+    // Delete old image if it exists
+    if (
+      user.photo &&
+      user.photo !== "defaultProfile.jpg" &&
+      fs.existsSync(path.join(__dirname, "../public", user.photo))
+    ) {
+      fs.unlinkSync(path.join(__dirname, "../public", user.photo));
+    }
+    console.log(req.file);
+    userUpdatedData.photo = req.file.filename;
+  } else {
+    userUpdatedData.photo = user.photo;
+  }
 
   const userUpdated = await usersDetails.findByIdAndUpdate(
     _id,
-    { name, bio, photo, phoneNumber, role },
+    userUpdatedData,
     { new: true, runValidators: true }
   );
 
@@ -323,8 +415,8 @@ const resetPassword = asyncHandler(async (req, res) => {
 
 // Delete user
 const deleteUser = asyncHandler(async (req, res) => {
-  const { id } = req.params;
-  const user = await usersDetails.findById(id);
+  const { _id } = req.params;
+  const user = await usersDetails.findById(_id);
 
   if (!user) {
     res.status(404);
@@ -346,6 +438,7 @@ const getAllUsers = asyncHandler(async (req, res) => {
 
   res.status(200).json(users);
 });
+//create user
 
 module.exports = {
   registerUser,
@@ -359,4 +452,6 @@ module.exports = {
   resetPassword,
   deleteUser,
   getAllUsers,
+  getUserById,
+  createUser
 };

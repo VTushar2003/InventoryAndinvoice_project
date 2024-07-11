@@ -62,7 +62,7 @@ const ProductData = () => {
     try {
       const result = await dispatch(getProduct(productId));
       setViewingProduct(result.payload);
-      console.log("product details :",result.payload);
+      console.log("product details :", result.payload);
     } catch (error) {
       console.error("Failed in getting product data", error);
     }
@@ -70,7 +70,6 @@ const ProductData = () => {
 
   const delProduct = async (productId) => {
     try {
-      console.log("Deleting product:", productId);
       await dispatch(deleteProduct(productId));
       console.log("Product deleted successfully:", productId);
       // Update products list after successful deletion
@@ -92,10 +91,10 @@ const ProductData = () => {
   };
 
   //edit product
-  const editProduct = async (productId,formData) => {
+  const editProduct = async (productId, formData) => {
     try {
-      debugger;
-      await dispatch(updateProduct({productId,formData}));
+      
+      await dispatch(updateProduct({ productId, formData }));
       setEditModalVisible(false);
       getAllProducts();
     } catch (error) {
@@ -127,6 +126,19 @@ const ProductData = () => {
       dataIndex: "quantity",
       key: "quantity",
       responsive: ["sm"],
+      render: (text, record) => (
+        <div
+        style={{
+          background: record.quantity < 10 ? "red" : "green",
+          borderRadius: "3px",
+          color: "white",
+          padding: "0 5px",
+          textAlign: "center",
+        }}
+        >
+          {record.quantity}
+        </div>
+      ),
     },
     {
       title: "Price",
@@ -155,8 +167,7 @@ const ProductData = () => {
           <button
             className="hover:text-blue-500"
             onClick={() => {
-              setViewModalVisible(true),
-              fetchProductById(record.productId)   
+              setViewModalVisible(true), fetchProductById(record.productId);
             }}
           >
             <EyeOutlined />
@@ -191,6 +202,9 @@ const ProductData = () => {
       </div>
 
       <Table
+
+        rowClassName="text-[1rem] text-center"
+        bordered={true}
         columns={columns}
         size="large"
         dataSource={items}
@@ -201,7 +215,7 @@ const ProductData = () => {
           pageSizeOptions: ["10", "20", "50"],
         }}
       />
-     {editingProduct && (
+      {editingProduct && (
         <EditProduct
           visible={editModalVisible}
           onClose={() => setEditModalVisible(false)}
@@ -210,7 +224,7 @@ const ProductData = () => {
         />
       )}
       {viewingProduct && (
-        <ProductDetails 
+        <ProductDetails
           visible={viewModalVisible}
           onClose={() => setViewModalVisible(false)}
           product={viewingProduct}

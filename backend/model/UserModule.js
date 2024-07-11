@@ -33,8 +33,7 @@ const UserSchema =mongoose.Schema({
     },
     photo : {
         type : String,
-        /* required : [true,"please add a photo"], */
-        default : 'backend/public/defaultProfile.jpg',
+        default : 'defaultProfile.jpg',
     },
     bio : {
         type : String,

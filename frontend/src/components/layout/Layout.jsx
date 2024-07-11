@@ -8,17 +8,26 @@ import {
   AppstoreAddOutlined,
   UsergroupAddOutlined,
   FileDoneOutlined,
+  ShoppingOutlined
 } from "@ant-design/icons";
 import { Button, Layout, Menu, theme } from "antd";
 import ButtonInfo from "../buttons/Button";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { selectIsLoggedIn, selectName, SET_NAME, SET_USER } from "../../redux/auth/AuthReducer";
+import {
+  selectIsLoggedIn,
+  selectName,
+  SET_NAME,
+  SET_USER,
+} from "../../redux/auth/AuthReducer";
 import { getUser } from "../../services/Authservice";
+import toast from "react-hot-toast";
+import useRedirectLoggedOutUser from "../../customhooks/useRedirectLoggedOutUser";
 
 const { Header, Sider, Content } = Layout;
 
 const DefaultLayout = ({ children }) => {
+  useRedirectLoggedOutUser("/login");
 
   const dispatch = useDispatch();
   const [user, setUser] = useState([]);
@@ -37,7 +46,6 @@ const DefaultLayout = ({ children }) => {
     }
     getUserData();
   }, [dispatch]);
-
 
   const name = useSelector(selectName);
   const [collapsed, setCollapsed] = useState(false);
@@ -58,15 +66,42 @@ const DefaultLayout = ({ children }) => {
       label: <Link to="/Product">Inventory</Link>,
     },
     {
-      key: "/Invoice",
+      key: "/Sales",
       icon: <FileDoneOutlined />,
-      label: <Link to="/Invoice">Invoice</Link>,
+      label: 'Sales',
+      children: [
+        {
+          key: "/Sales/Customers",
+          label: <Link to="/Customers">Customers</Link>,
+        },
+        {
+          key: "/Sales/Invoice",
+          label: <Link to="/Invoices">Invoice</Link>,
+        },
+      ],
     },
-     user && user.role === 'admin' && {
-      key: "/Users",
-      icon: <UsergroupAddOutlined />,
-      label: <Link to="/Users">Manage Users</Link>,
+    {
+      key : '/Purchases',
+      icon : <ShoppingOutlined />,
+      label : "Purchases",
+      children : [
+        {
+          key :"/Purchases/Suppliers",
+          label : <Link to="/Suppliers">Suppliers</Link>,
+        },
+        {
+          key :"/Purchases/Purchase Order",
+          label : <Link to="/PurchaseOrder">Purchase order</Link>,
+        }
+      ]
+
     },
+    user &&
+      user.role === "admin" && {
+        key: "/Users",
+        icon: <UsergroupAddOutlined />,
+        label: <Link to="/Users">Manage Users</Link>,
+      },
     {
       key: "/Profile",
       icon: <UserOutlined />,
@@ -99,7 +134,6 @@ const DefaultLayout = ({ children }) => {
         <Header
           className="flex justify-between"
           style={{
-            margin: "0 1rem",
             borderRadius: borderRadiusLG,
             background: colorBgContainer,
           }}
@@ -122,7 +156,6 @@ const DefaultLayout = ({ children }) => {
         </Header>
         <Content
           style={{
-            margin: "24px 16px",
             padding: 24,
             minHeight: 280,
             background: colorBgContainer,

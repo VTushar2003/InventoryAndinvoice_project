@@ -26,13 +26,11 @@ const deleteProduct = async (productId) => {
 };
 // Get a Product
 const getProduct = async (productId) => {
-  debugger;
   const response = await axios.get(`${API_URL}${productId}`);
   return response.data;
 };
 // Update Product
 const updateProduct = async (productId, formData) => {
-  debugger;
   const response = await axios.put(`${API_URL}${productId}`, formData, {
     headers: {
       "Content-Type": "multipart/form-data",

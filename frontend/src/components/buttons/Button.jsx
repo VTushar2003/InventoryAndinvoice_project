@@ -11,11 +11,14 @@ const ButtonInfo = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const handleMenuClick = async ({ key }) => {
+//logout function
+  const handleMenuClick = async ({ key}) => {
+    if(key === '1'){
+      navigate('/editprofile');
+    }
     if (key === '3') {
       // Logout
       try {
-        debugger;
         await axios.get('http://localhost:3000/api/usersDetails/logout');
         dispatch(SET_LOGIN(false))
         dispatch(SET_NAME(""));
@@ -35,7 +38,7 @@ const ButtonInfo = () => {
   const menuProps = {
     items: [
       {
-        label: <Link to="/edit-profile">Edit Profile</Link>,
+        label: 'Edit profile',
         key: '1',
         icon: <UserOutlined />,
       },
