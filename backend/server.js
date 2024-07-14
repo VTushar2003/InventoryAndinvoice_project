@@ -11,6 +11,7 @@ const cookieParser = require("cookie-parser");
 const productRouter = require("./routes/productRoute");
 const invoiceRouter = require("./routes/invoiceRoute");
 const customerRouter = require("./routes/customerRoute");
+const supplierRoute = require("./routes/supplierRoute");
 /* const adminRouter = require("./routes/adminRoute"); */
 
 //middlewares
@@ -32,6 +33,7 @@ app.use("/api/usersDetails", router);
 app.use("/api/products", productRouter);
 app.use("/api/invoice", invoiceRouter);
 app.use("/api/Customer", customerRouter);
+app.use("/api/Supplier", supplierRoute);
 //routes
 app.get("/", (req, res) => {
   res.send("Home page");

@@ -30,7 +30,10 @@ const ViewInvoices = ({ visible, onClose, invoiceDets }) => {
         item.product.name,
         item.quantity,
         item.price,
-        { content: (item.quantity * item.price).toFixed(2), styles: { fontStyle: 'normal' } }, // Ensure total amount is formatted
+        {
+          content: (item.quantity * item.price).toFixed(2),
+          styles: { fontStyle: "normal" },
+        }, // Ensure total amount is formatted
       ]),
       styles: {
         font: "Sans",
@@ -43,7 +46,11 @@ const ViewInvoices = ({ visible, onClose, invoiceDets }) => {
 
     // Set font size and style for total amount
     doc.setFontSize(12);
-    doc.text(`Total Amount: ${invoiceDets.totalAmount}`, 14, doc.lastAutoTable.finalY + 10);
+    doc.text(
+      `Total Amount: ${invoiceDets.totalAmount}`,
+      14,
+      doc.lastAutoTable.finalY + 10
+    );
 
     // Save the PDF with a specific file name
     doc.save(`invoice-${invoiceDets.invoiceOrder}.pdf`);
@@ -75,15 +82,13 @@ const ViewInvoices = ({ visible, onClose, invoiceDets }) => {
     {
       title: "Unit Price",
       dataIndex: "price",
-      key: "price",
+      key: "productPrice",
       responsive: ["sm"],
     },
     {
       title: "Total",
-      render: (text, record) => (
-        <span>{record.quantity * record.price}</span>
-      ),
-      key: "total",
+      render: (text, record) => <span>{record.quantity * record.price}</span>,
+      key: "Total",
       responsive: ["sm"],
     },
   ];
@@ -97,8 +102,12 @@ const ViewInvoices = ({ visible, onClose, invoiceDets }) => {
         onCancel={onClose}
         footer={
           <div className="flex justify-end gap-4">
-            <Button type="primary" onClick={handleDownload}>Download</Button>
-            <Button type="primary" onClick={handlePrint}>Print</Button>
+            <Button type="primary" onClick={handleDownload}>
+              Download
+            </Button>
+            <Button type="primary" onClick={handlePrint}>
+              Print
+            </Button>
           </div>
         }
       >
@@ -123,15 +132,24 @@ const ViewInvoices = ({ visible, onClose, invoiceDets }) => {
               <p>{invoiceDets.customer.customerEmail}</p>
             </div>
             <div className="text-sm">
-              <h1>Invoice Date: {new Date(invoiceDets.invoiceDate).toLocaleString("en-IN")}</h1>
-              <h1>Due Date: {new Date(invoiceDets.dueDate).toLocaleString("en-IN")}</h1>
+              <h1>
+                Invoice Date:{" "}
+                {new Date(invoiceDets.invoiceDate).toLocaleString("en-IN")}
+              </h1>
+              <h1>
+                Due Date:{" "}
+                {new Date(invoiceDets.dueDate).toLocaleString("en-IN")}
+              </h1>
               <h1>Status: {invoiceDets.status}</h1>
             </div>
           </div>
           <div className="table">
             <Table
               className="bg-blue"
-              dataSource={invoiceDets.items}
+              dataSource={invoiceDets.items.map((item) => ({
+                ...item,
+                key: item.product.productId,
+              }))}
               columns={columns}
               pagination={false}
             />

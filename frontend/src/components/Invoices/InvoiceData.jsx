@@ -1,6 +1,11 @@
-import { Space, Table } from "antd";
+import { Space, Table, Button } from "antd";
 import React, { useEffect, useState } from "react";
-import { EditOutlined, EyeOutlined, DeleteOutlined } from "@ant-design/icons";
+import {
+  EditOutlined,
+  EyeOutlined,
+  DeleteOutlined,
+  PlusOutlined,
+} from "@ant-design/icons";
 import {
   createInvoice,
   updateInvoice,
@@ -9,7 +14,8 @@ import {
   getInvoiceById,
 } from "../../services/InvoiceService";
 import ViewInvoices from "./ViewInvoices";
-import InvoiceEdit from "./InvoiceEdit";
+import InvoiceEdit from "./EditInvoice";
+import AddInvoice from "./AddInvoice";
 
 const initialState = {
   customerName: "",
@@ -24,26 +30,12 @@ const initialState = {
 
 const InvoiceData = () => {
   const [invoice, setInvoice] = useState([]);
-  const [addInvoice, setAddInvoice] = useState(initialState);
+  const [addModalVisible, setAddModalVisible] = useState(false);
+  const [viewModalVisible, setViewModalVisible] = useState(false);
+  const [editModalVisible, setEditModalVisible] = useState(false);
+  const [viewInvoicedets, setViewInvoicedets] = useState(null);
+  const [editingInvoice, setEditingInvoice] = useState(null);
 
-  const {
-    customerName,
-    invoiceOrder,
-    items,
-    paymentMode,
-    amountPaid,
-    status,
-    invoiceDate,
-    dueDate,
-  } = addInvoice;
-
-  //add invoice
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setAddCustomer({ ...addInvoice, [name]: value });
-  };
-
-  //replace blank space with null
   const replaceEmptyWithNull = (item) => {
     const newItem = {};
     for (const key in item) {
@@ -80,30 +72,26 @@ const InvoiceData = () => {
       console.log("Error fetching Invoices:", error);
     }
   };
+
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString();
+    return date.toLocaleDateString("en-IN");
   };
+
   useEffect(() => {
     getAllInvoices();
   }, []);
-  //get invoice by id
-  const [viewInvoicedets, setViewInvoicedets] = useState(null);
-  const [viewModalVisible, setViewModalVisible] = useState(false);
+
   const getInvoiceDetails = async (id) => {
     try {
       const result = await getInvoiceById(id);
       setViewInvoicedets(result);
       setViewModalVisible(true);
-      console.log("invoice Details :", result);
+      console.log("Invoice Details:", result);
     } catch (error) {
       console.error("Failed in getting Invoice details", error);
     }
   };
-
-  //edit invoice
-  const [editModalVisible, setEditModalVisible] = useState(false);
-  const [editingInvoice, setEditingInvoice] = useState(null);
 
   const EditInvoiceData = async (invoiceData) => {
     try {
@@ -113,6 +101,25 @@ const InvoiceData = () => {
       getAllInvoices();
     } catch (error) {
       console.error("Error updating Invoice:", error);
+    }
+  };
+  const deleteInvoiceById = async (id) => {
+    try {
+      await deleteInvoice(id);
+      getAllInvoices();
+    } catch (error) {
+      console.error("Error deleting Invoice:", error);
+    }
+  };
+
+  const handleAddInvoice = async (invoiceData) => {
+    try {
+      console.log("Submitting Invoice Data: ", invoiceData); // Log the invoice data
+      await createInvoice(invoiceData);
+      setAddModalVisible(false);
+      getAllInvoices();
+    } catch (error) {
+      console.error("Error creating Invoice:", error);
     }
   };
 
@@ -166,16 +173,12 @@ const InvoiceData = () => {
       key: "action",
       render: (text, record) => (
         <Space size="middle">
-          {/* view Invoice details */}
           <button
             className="hover:text-blue-500"
-            onClick={() => {
-              getInvoiceDetails(record._id);
-            }}
+            onClick={() => getInvoiceDetails(record._id)}
           >
             <EyeOutlined />
           </button>
-          {/* edit Invoice */}
           <button
             className="hover:text-blue-500"
             onClick={() => {
@@ -185,8 +188,10 @@ const InvoiceData = () => {
           >
             <EditOutlined />
           </button>
-          {/* delete Invoice */}
-          <button className="hover:text-red-700">
+          <button
+            className="hover:text-red-700"
+            onClick={() => deleteInvoiceById(record._id)}
+          >
             <DeleteOutlined />
           </button>
         </Space>
@@ -194,8 +199,18 @@ const InvoiceData = () => {
       responsive: ["sm"],
     },
   ];
+
   return (
     <>
+      <div className="flex justify-end mb-[1rem]">
+        <Button
+          type="primary"
+          onClick={() => setAddModalVisible(true)}
+          icon={<PlusOutlined />}
+        >
+          Add Invoice
+        </Button>
+      </div>
       <Table
         rowClassName="text-[1rem] text-center"
         bordered={true}
@@ -209,25 +224,26 @@ const InvoiceData = () => {
           pageSizeOptions: ["10", "20", "50"],
         }}
       />
-      {/* view invoice */}
       {viewInvoicedets && (
         <ViewInvoices
           visible={viewModalVisible}
-          onClose={() => {
-            setViewModalVisible(false);
-          }}
+          onClose={() => setViewModalVisible(false)}
           invoiceDets={viewInvoicedets}
         />
       )}
-      {/* edit invoice */}
-     {editingInvoice && (
-        <InvoiceEdit 
-        visible={editModalVisible}
-        onClose={() => setEditModalVisible(false)}
-        onSubmit={EditInvoiceData}
-        edit={editingInvoice}
+      {editingInvoice && (
+        <InvoiceEdit
+          visible={editModalVisible}
+          onClose={() => setEditModalVisible(false)}
+          onSubmit={EditInvoiceData}
+          edit={editingInvoice}
         />
-     )}
+      )}
+      <AddInvoice
+        visible={addModalVisible}
+        onClose={() => setAddModalVisible(false)}
+        onSubmit={handleAddInvoice}
+      />
     </>
   );
 };

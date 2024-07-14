@@ -12,7 +12,6 @@ const useRedirectLoggedOutUser = (path) => {
     const getLoginStatus = async () => {
     try {
       const res = await axios.get('http://localhost:3000/api/usersDetails/LoggedIn');
-      console.log('Login status respon:', res.data);
       return res.data.LoggedIn;
     } catch (error) {
       const message =
@@ -28,7 +27,6 @@ const useRedirectLoggedOutUser = (path) => {
   useEffect(() => {
     const redirectLoggedOutUser = async () => {
       const isLoggedIn = await getLoginStatus();
-      console.log('Is logged in:', isLoggedIn);
       dispatch(SET_LOGIN(isLoggedIn));
 
       if (!isLoggedIn) {

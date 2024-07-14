@@ -76,23 +76,43 @@ const createInvoice = asyncHandler(async (req, res) => {
   res.status(201).json(createdInvoice);
 });
 
-// Update invoice status
 const updateInvoiceStatus = asyncHandler(async (req, res) => {
-  const { customerName, status, paymentMode, amountPaid, dueDate, addedItems } =
-    req.body;
+  const {
+    customerName,
+    status,
+    paymentMode,
+    amountPaid,
+    dueDate,
+    invoiceDate,
+    addedItems,
+    removedItems, // New field for items to be removed
+    invoiceOrder,
+  } = req.body;
   const { id } = req.params;
 
-  const invoice = await Invoice.findById(id).populate("customer");
+  const invoice = await Invoice.findById(id).populate("customer items.product");
   if (!invoice) {
     res.status(404);
     throw new Error("Invoice not found");
   }
 
+  // Ensure amountPaid is a number if provided
+  let parsedAmountPaid;
+  if (amountPaid !== undefined) {
+    parsedAmountPaid = parseFloat(amountPaid);
+    if (isNaN(parsedAmountPaid)) {
+      res.status(400);
+      throw new Error("Invalid amountPaid value");
+    }
+  }
+
   // Update customer totals before modifying the invoice
   const customer = await Customer.findById(invoice.customer._id);
-  customer.totalAmountDue -= invoice.amountDue;
-  customer.totalAmountPaid -= invoice.amountPaid;
-  await customer.save();
+  if (customer) {
+    customer.totalAmountDue -= invoice.amountDue;
+    customer.totalAmountPaid -= invoice.amountPaid;
+    await customer.save();
+  }
 
   // Update the customer name if provided
   if (customerName) {
@@ -112,10 +132,44 @@ const updateInvoiceStatus = asyncHandler(async (req, res) => {
 
   // Update the due date if provided
   if (dueDate) {
-    invoice.dueDate = dueDate;
+    invoice.dueDate = new Date(dueDate);
   }
 
-  // Update the added items if provided
+  // Update the invoice date if provided
+  if (invoiceDate) {
+    invoice.invoiceDate = new Date(invoiceDate);
+  }
+
+  // Update the invoice order if provided
+  if (invoiceOrder) {
+    invoice.invoiceOrder = invoiceOrder;
+  }
+
+  // Handle removed items
+  if (removedItems && removedItems.length > 0) {
+    for (const item of removedItems) {
+      const existingItemIndex = invoice.items.findIndex(
+        (invItem) => invItem.product._id.toString() === item.productId
+      );
+      if (existingItemIndex !== -1) {
+        const existingItem = invoice.items[existingItemIndex];
+        const product = await Product.findById(item.productId);
+
+        // Increase the product quantity back to inventory
+        product.quantity += existingItem.quantity;
+        await product.save();
+
+        // Update total amounts
+        invoice.totalAmount -= existingItem.quantity * existingItem.price;
+        invoice.amountDue -= existingItem.quantity * existingItem.price;
+
+        // Remove the item from the invoice
+        invoice.items.splice(existingItemIndex, 1);
+      }
+    }
+  }
+
+  // Handle added items
   if (addedItems && addedItems.length > 0) {
     const productDetails = await Promise.all(
       addedItems.map(async (item) => {
@@ -151,18 +205,24 @@ const updateInvoiceStatus = asyncHandler(async (req, res) => {
     invoice.amountDue += additionalAmount;
   }
 
-  invoice.amountPaid += amountPaid;
+  // Update the amountPaid if provided
+  if (parsedAmountPaid !== undefined) {
+    invoice.amountPaid += parsedAmountPaid;
+  }
+
   invoice.amountDue = invoice.totalAmount - invoice.amountPaid;
-  invoice.paymentMode = paymentMode;
-  invoice.status = status;
+  if (paymentMode) invoice.paymentMode = paymentMode;
+  if (status) invoice.status = status;
   invoice.updatedAt = Date.now();
 
   const updatedInvoice = await invoice.save();
 
-  // Update the customer's totals with the new invoice amounts
-  customer.totalAmountDue += invoice.amountDue;
-  customer.totalAmountPaid += invoice.amountPaid;
-  await customer.save();
+  // Update the customer's totals if invoice is changed
+  if (customer) {
+    customer.totalAmountDue += invoice.amountDue;
+    customer.totalAmountPaid += invoice.amountPaid;
+    await customer.save();
+  }
 
   res.status(200).json(updatedInvoice);
 });

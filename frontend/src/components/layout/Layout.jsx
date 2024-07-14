@@ -8,7 +8,7 @@ import {
   AppstoreAddOutlined,
   UsergroupAddOutlined,
   FileDoneOutlined,
-  ShoppingOutlined
+  ShoppingOutlined,
 } from "@ant-design/icons";
 import { Button, Layout, Menu, theme } from "antd";
 import ButtonInfo from "../buttons/Button";
@@ -68,7 +68,7 @@ const DefaultLayout = ({ children }) => {
     {
       key: "/Sales",
       icon: <FileDoneOutlined />,
-      label: 'Sales',
+      label: "Sales",
       children: [
         {
           key: "/Sales/Customers",
@@ -81,20 +81,19 @@ const DefaultLayout = ({ children }) => {
       ],
     },
     {
-      key : '/Purchases',
-      icon : <ShoppingOutlined />,
-      label : "Purchases",
-      children : [
+      key: "/Purchases",
+      icon: <ShoppingOutlined />,
+      label: "Purchases",
+      children: [
         {
-          key :"/Purchases/Suppliers",
-          label : <Link to="/Suppliers">Suppliers</Link>,
+          key: "/Purchases/Suppliers",
+          label: <Link to="/Suppliers">Suppliers</Link>,
         },
         {
-          key :"/Purchases/Purchase Order",
-          label : <Link to="/PurchaseOrder">Purchase order</Link>,
-        }
-      ]
-
+          key: "/Purchases/Purchase Order",
+          label: <Link to="/PurchaseOrder">Purchase order</Link>,
+        },
+      ],
     },
     user &&
       user.role === "admin" && {

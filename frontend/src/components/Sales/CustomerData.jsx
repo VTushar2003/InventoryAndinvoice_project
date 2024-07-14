@@ -59,15 +59,6 @@ const CustomerData = () => {
           .map((item) => replaceEmptyWithNull(item));
         setCustomer(productsWithKeys);
         console.log(res); // Corrected from response.data to res
-      } else if (res && res.data && Array.isArray(res.data)) {
-        const productsWithKeys = res.data
-          .map((item, index) => ({
-            ...item,
-            key: item._id || index,
-          }))
-          .map((item) => replaceEmptyWithNull(item));
-        setCustomer(productsWithKeys);
-        console.log(res.data); // Corrected from response.data to res.data
       } else {
         console.error("Unexpected response structure:", res);
       }
@@ -88,6 +79,7 @@ const CustomerData = () => {
   const handleCustomerType = (e) => {
     setAddCustomer({ ...addCustomer, customerType: e.target.value });
   };
+
   const addCustomerData = async (e) => {
     e.preventDefault();
     if (

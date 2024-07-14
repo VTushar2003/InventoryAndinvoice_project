@@ -10,7 +10,7 @@ const invoiceSchema = new mongoose.Schema(
     invoiceOrder: {
       type: String,
       required: true,
-      unique : true
+      unique: true,
     },
     items: [
       {
@@ -30,16 +30,14 @@ const invoiceSchema = new mongoose.Schema(
     },
     totalAmount: {
       type: Number,
-      required: true,
+      default: 0,
     },
     amountDue: {
       type: Number,
-      required: true,
       default: 0,
     },
     amountPaid: {
       type: Number,
-      required: true,
       default: 0,
     },
     paymentMode: {
@@ -53,11 +51,11 @@ const invoiceSchema = new mongoose.Schema(
       default: "Pending",
     },
     invoiceDate: {
-      type: Date,
+      type: String,
       required: true,
     },
     dueDate: {
-      type: Date,
+      type: String,
       required: true,
     },
   },
