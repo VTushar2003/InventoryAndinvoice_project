@@ -84,3 +84,6 @@ html,body{
   background-color: #1677FF !important;
   color: white !important;
 }
+.edit-user-profile {
+  overflow-y:auto;
+}

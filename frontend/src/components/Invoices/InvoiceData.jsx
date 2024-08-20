@@ -75,7 +75,8 @@ const InvoiceData = () => {
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString("en-IN");
+    const options = { day: "2-digit", month: "short", year: "numeric" };
+    return date.toLocaleDateString("en-IN", options);
   };
 
   useEffect(() => {
@@ -113,9 +114,10 @@ const InvoiceData = () => {
   };
 
   const handleAddInvoice = async (invoiceData) => {
+    debugger;
     try {
-      console.log("Submitting Invoice Data: ", invoiceData); // Log the invoice data
       await createInvoice(invoiceData);
+      console.log("Submitting Invoice Data: ", invoiceData); // Log the invoice data
       setAddModalVisible(false);
       getAllInvoices();
     } catch (error) {

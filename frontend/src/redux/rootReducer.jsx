@@ -184,11 +184,6 @@ const productSlice = createSlice({
         state.isSuccess = true;
         state.isError = false;
         toast.success("Product updated successfully");
-        // Update product in state
-       /*  const updatedProductIndex = state.products.find(product => product.productId === action.payload.productId);
-        if (updatedProductIndex !== -1) {
-          state.products[updatedProductIndex] = action.payload;
-        } */
       })
       // Rejected Cases
       .addCase(createProduct.rejected, (state, action) => {

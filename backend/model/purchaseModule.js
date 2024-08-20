@@ -38,6 +38,8 @@ const SupplierSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
 const Supplier = mongoose.model("Supplier", SupplierSchema);
 
 module.exports = Supplier;
+

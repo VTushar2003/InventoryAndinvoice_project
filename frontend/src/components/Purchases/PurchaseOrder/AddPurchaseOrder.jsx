@@ -2,16 +2,16 @@ import { Button, Form, Input, Modal, Select, Radio, Space } from "antd";
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { getCustomers } from "./../../services/CustomerService";
+import { getSuppliers } from "./../../../services/SuppliersService";
 
-const generateInvoiceNumber = () => {
+const generatePurchaseOrderNumber = () => {
   const randomNumber = Math.floor(100000 + Math.random() * 900000);
-  return `IO-${randomNumber}`;
+  return `PO-${randomNumber}`;
 };
 
-const AddInvoice = ({ visible, onClose, onSubmit }) => {
+const AddPurchaseOrder = ({ visible, onClose, onSubmit }) => {
   const [form] = Form.useForm();
-  const [customers, setCustomers] = useState([]);
+  const [suppliers, setSuppliers] = useState([]);
   const [products, setProducts] = useState([]);
   const [totalAmount, setTotalAmount] = useState(0);
 
@@ -22,21 +22,20 @@ const AddInvoice = ({ visible, onClose, onSubmit }) => {
   };
 
   useEffect(() => {
-    const fetchCustomers = async () => {
+    const fetchSuppliers = async () => {
       try {
-        const response = await getCustomers();
+        const response = await getSuppliers();
         if (response) {
-          setCustomers(response);
+          setSuppliers(response);
         } else {
-          throw new Error("Failed to fetch customers");
+          throw new Error("Failed to fetch suppliers");
         }
       } catch (error) {
-        console.error("Error fetching customers:", error);
+        console.error("Error fetching suppliers:", error);
       }
     };
 
     const fetchProducts = async () => {
-      debugger;
       try {
         const response = await axios.get(`http://localhost:3000/api/products/`);
         if (response.data) {
@@ -50,13 +49,13 @@ const AddInvoice = ({ visible, onClose, onSubmit }) => {
       }
     };
 
-    fetchCustomers();
+    fetchSuppliers();
     fetchProducts();
   }, []);
 
   useEffect(() => {
     if (visible) {
-      form.setFieldsValue({ invoiceOrder: generateInvoiceNumber() });
+      form.setFieldsValue({ purchaseOrderNumber: generatePurchaseOrderNumber() });
     }
   }, [visible, form]);
 
@@ -64,24 +63,36 @@ const AddInvoice = ({ visible, onClose, onSubmit }) => {
     form
       .validateFields()
       .then((values) => {
+        const populatedItems = values.items.map((item) => {
+          const product = products.find((prod) => prod._id === item.productId);
+          const unitPrice = product ? product.price : 0;
+          const totalPrice = unitPrice * item.quantity;
+          return {
+            ...item,
+            unitPrice,
+            totalPrice,
+          };
+        });
+
+        const calculatedTotalAmount = populatedItems.reduce(
+          (sum, item) => sum + item.totalPrice,
+          0
+        );
+
         const payload = {
-          customerName: values.customer,
-          invoiceOrder: values.invoiceOrder,
-          items: values.items.map((item) => ({
-            productId: item.productId,
-            quantity: item.quantity,
-          })),
-          paymentMode: values.paymentMode,
-          amountPaid: values.amountPaid,
+          purchaseOrderNumber: values.purchaseOrderNumber,
+          supplier: values.supplier,
+          orderDate: values.orderDate,
+          items: populatedItems,
+          totalAmount: calculatedTotalAmount,
+          deliveryDate: values.deliveryDate,
           status: values.status,
-          invoiceDate: values.invoiceDate,
-          dueDate: values.dueDate,
         };
 
         onSubmit(payload);
         form.resetFields();
         setTotalAmount(0);
-        form.setFieldsValue({ invoiceOrder: generateInvoiceNumber() });
+        form.setFieldsValue({ purchaseOrderNumber: generatePurchaseOrderNumber() });
       })
       .catch((info) => {
         console.log("Validate Failed:", info);
@@ -91,7 +102,7 @@ const AddInvoice = ({ visible, onClose, onSubmit }) => {
   return (
     <Modal
       open={visible}
-      title="Add Invoice"
+      title="Add Purchase Order"
       onCancel={(e) => handleClose(e)}
       onOk={handleOk}
       footer={[
@@ -105,16 +116,16 @@ const AddInvoice = ({ visible, onClose, onSubmit }) => {
     >
       <Form form={form} layout="vertical">
         <Form.Item
-          name="invoiceOrder"
-          label="Invoice Number"
-          rules={[{ required: true, message: "Please enter invoice number!" }]}
+          name="purchaseOrderNumber"
+          label="Purchase Order Number"
+          rules={[{ required: true, message: "Please enter Purchase Order number!" }]}
         >
           <Input />
         </Form.Item>
         <Form.Item
-          name="customer"
-          label="Customer Name"
-          rules={[{ required: true, message: "Please select customer!" }]}
+          name="supplier"
+          label="Supplier"
+          rules={[{ required: true, message: "Please select supplier!" }]}
         >
           <Select
             showSearch
@@ -124,9 +135,9 @@ const AddInvoice = ({ visible, onClose, onSubmit }) => {
               option.children.toLowerCase().includes(input.toLowerCase())
             }
           >
-            {customers.map((customer) => (
-              <Select.Option key={customer._id} value={customer.CustomerName}>
-                {customer.CustomerName}
+            {suppliers.map((supplier) => (
+              <Select.Option key={supplier._id} value={supplier.SupplierName}>
+                {supplier.SupplierName}
               </Select.Option>
             ))}
           </Select>
@@ -149,10 +160,7 @@ const AddInvoice = ({ visible, onClose, onSubmit }) => {
                   >
                     <Select placeholder="Select Product">
                       {products.map((product) => (
-                        <Select.Option
-                          key={product._id}
-                          value={product.productId}
-                        >
+                        <Select.Option key={product._id} value={product.productId}>
                           {product.name}
                         </Select.Option>
                       ))}
@@ -170,7 +178,6 @@ const AddInvoice = ({ visible, onClose, onSubmit }) => {
                   <MinusCircleOutlined onClick={() => remove(name)} />
                 </Space>
               ))}
-
               <Form.Item>
                 <Button
                   type="dashed"
@@ -185,25 +192,6 @@ const AddInvoice = ({ visible, onClose, onSubmit }) => {
           )}
         </Form.List>
         <Form.Item
-          name="paymentMode"
-          label="Payment Mode"
-          rules={[{ required: true, message: "Please select payment mode!" }]}
-        >
-          <Radio.Group>
-            <Radio value="Debit/Credit">Debit/Credit</Radio>
-            <Radio value="Cash">Cash</Radio>
-            <Radio value="BNPL">BNPL</Radio>
-          </Radio.Group>
-        </Form.Item>
-        <Form.Item
-          name="amountPaid"
-          label="Amount Paid"
-          initialValue={0}
-          rules={[{ required: true, message: "Please enter amount paid!" }]}
-        >
-          <Input type="number" />
-        </Form.Item>
-        <Form.Item
           name="status"
           label="Status"
           rules={[{ required: true, message: "Please select status!" }]}
@@ -215,16 +203,16 @@ const AddInvoice = ({ visible, onClose, onSubmit }) => {
           </Radio.Group>
         </Form.Item>
         <Form.Item
-          name="invoiceDate"
-          label="Invoice Date"
-          rules={[{ required: true, message: "Please select invoice date!" }]}
+          name="orderDate"
+          label="Order Date"
+          rules={[{ required: true, message: "Please select Order date!" }]}
         >
           <Input type="date" />
         </Form.Item>
         <Form.Item
-          name="dueDate"
-          label="Due Date"
-          rules={[{ required: true, message: "Please select due date!" }]}
+          name="deliveryDate"
+          label="Expected Delivery Date"
+          rules={[{ required: true, message: "Please select Expected Delivery date!" }]}
         >
           <Input type="date" />
         </Form.Item>
@@ -236,4 +224,4 @@ const AddInvoice = ({ visible, onClose, onSubmit }) => {
   );
 };
 
-export default AddInvoice;
+export default AddPurchaseOrder;

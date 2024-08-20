@@ -1,5 +1,6 @@
 const asyncHandler = require("express-async-handler");
 const Supplier = require("../model/purchaseModule");
+
 // Create supplier
 const createSupplier = asyncHandler(async (req, res) => {
   const {
@@ -24,7 +25,7 @@ const createSupplier = asyncHandler(async (req, res) => {
 
 // Get all suppliers
 const getSuppliers = asyncHandler(async (req, res) => {
-  const suppliers = await Supplier.find({});
+  const suppliers = await Supplier.find();
   res.json(suppliers);
 });
 

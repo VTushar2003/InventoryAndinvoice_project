@@ -23,6 +23,7 @@ import {
 import { getUser } from "../../services/Authservice";
 import toast from "react-hot-toast";
 import useRedirectLoggedOutUser from "../../customhooks/useRedirectLoggedOutUser";
+import { Footer } from "antd/es/layout/layout";
 
 const { Header, Sider, Content } = Layout;
 
@@ -95,12 +96,11 @@ const DefaultLayout = ({ children }) => {
         },
       ],
     },
-    user &&
-      user.role === "admin" && {
-        key: "/Users",
-        icon: <UsergroupAddOutlined />,
-        label: <Link to="/Users">Manage Users</Link>,
-      },
+    user && user.role === "admin" && {
+      key: "/Users",
+      icon: <UsergroupAddOutlined />,
+      label: <Link to="/Users">Manage Users</Link>,
+    },
     {
       key: "/Profile",
       icon: <UserOutlined />,
@@ -110,7 +110,12 @@ const DefaultLayout = ({ children }) => {
 
   return (
     <Layout className="h-screen overflow-hidden">
-      <Sider trigger={null} collapsible collapsed={collapsed}>
+      <Sider
+        trigger={null}
+        collapsible
+        collapsed={collapsed}
+        className="flex-shrink-0"
+      >
         <div className="bg-sky-900 flex flex-col items-center justify-center h-[5rem]">
           {isLoggedIn && (
             <Link to="/">
@@ -120,18 +125,19 @@ const DefaultLayout = ({ children }) => {
 
           <h1 className="font-[grifter] text-[--light-blue]">INVENTRA</h1>
         </div>
-        <div className="demo-logo-vertical" />
-        <Menu
-          className="font-[Sans]"
-          theme="dark"
-          mode="inline"
-          defaultSelectedKeys={window.location.pathname}
-          items={menuItems}
-        />
+        <div className="menu-container">
+          <Menu
+            className="font-[Sans]"
+            theme="dark"
+            mode="inline"
+            defaultSelectedKeys={[window.location.pathname]}
+            items={menuItems}
+          />
+        </div>
       </Sider>
       <Layout>
         <Header
-          className="flex justify-between"
+          className="flex justify-between items-center"
           style={{
             borderRadius: borderRadiusLG,
             background: colorBgContainer,
@@ -147,24 +153,41 @@ const DefaultLayout = ({ children }) => {
               height: 64,
             }}
           />
-          <div className="flex w-40">
+          <div className="flex items-center justify-center space-x-2">
             <h1 className="text-black text-[1.32rem] font-thin">Welcome, </h1>
             <span className="text-[#1677FF] text-[1.32rem]">{name}</span>
           </div>
           <ButtonInfo />
         </Header>
+
         <Content
           style={{
             padding: 24,
-            minHeight: 280,
-            background: colorBgContainer,
+            minHeight: "calc(100vh - 64px)",
+            background: "white",
             borderRadius: borderRadiusLG,
           }}
+          className="overflow-auto"
         >
           {children}
         </Content>
       </Layout>
+
+      <style jsx="true" >{`
+        .menu-container {
+          height: calc(100vh - 5rem); /* Adjust the height to fill the remaining space */
+          overflow-y: auto;
+        }
+        
+        @media (min-width: 768px) {
+          .menu-container {
+            overflow-y: visible;
+          }
+        }
+      `}</style>
+
     </Layout>
+
   );
 };
 

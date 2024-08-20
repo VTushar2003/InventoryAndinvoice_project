@@ -7,6 +7,7 @@ import { UploadOutlined } from "@ant-design/icons";
 import { Button, Form, Input, Upload } from "antd";
 import { updateUser } from "../../services/Authservice";
 import toast from "react-hot-toast";
+import ChangePassword from "../ChangePassword/ChangePassword";
 
 const EditUserProfile = () => {
   const [form] = Form.useForm();
@@ -15,7 +16,7 @@ const EditUserProfile = () => {
   const [fileList, setFileList] = useState([]);
   const user = useSelector(selectUser);
   const [profile, setProfile] = useState(user);
-  const { email ,_id} = user;
+  const { email, _id } = user;
 
   useEffect(() => {
     if (user) {
@@ -52,7 +53,7 @@ const EditUserProfile = () => {
       if (fileList[0] && fileList[0].originFileObj) {
         formData.append("photo", fileList[0].originFileObj);
       }
-      await dispatch(updateUserData({_id,formData}));
+      await dispatch(updateUserData({ _id, formData }));
       toast.success("User details updated successfully");
       navigate("/profile");
     } catch (error) {
@@ -67,7 +68,13 @@ const EditUserProfile = () => {
 
   return (
     <DefaultLayout>
-      <Form form={form} labelCol={{ span: 6 }} onFinish={saveProfile} wrapperCol={{ span: 14 }}>
+      <Form
+        className="edit-user-profile"
+        form={form}
+        labelCol={{ span: 6 }}
+        onFinish={saveProfile}
+        wrapperCol={{ span: 14 }}
+      >
         <Form.Item label="Profile Image">
           <Upload
             listType="picture"

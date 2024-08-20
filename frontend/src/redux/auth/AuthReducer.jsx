@@ -1,45 +1,43 @@
-
-import { persistReducer } from 'redux-persist';
-import storage from 'redux-persist/lib/storage'; // defaults to localStorage
+import { persistReducer } from "redux-persist";
+import storage from "redux-persist/lib/storage"; // defaults to localStorage
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { getLoginStatus, updateUser } from '../../services/Authservice';
-import toast from 'react-hot-toast';
+import { updateUser } from "../../services/Authservice";
+import toast from "react-hot-toast";
 
 const name = JSON.parse(localStorage.getItem("name"));
 const initialState = {
   isLoggedIn: false,
   name: name ? name : "",
   user: {
-    _id : "",
+    _id: "",
     name: "",
     email: "",
     phone: "",
     bio: "",
     photo: "",
-    role :"",
+    role: "",
   },
 };
 //update user details thunk
 export const updateUserData = createAsyncThunk(
   "usersDetails/updateUser",
   async (data, thunkAPI) => {
-    ;
     try {
-      const {_id, formData} = data;
-      const response = await updateUser(_id,formData);
+      const { _id, formData } = data;
+      const response = await updateUser(_id, formData);
       return response.data;
     } catch (error) {
       const message =
-        (error.response && error.response.data && error.response.data.message) ||
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
         error.message ||
         error.toString();
-      console.error(message); 
-      return thunkAPI.rejectWithValue(message); 
+      console.error(message);
+      return thunkAPI.rejectWithValue(message);
     }
   }
 );
-
-
 
 const authSlice = createSlice({
   name: "auth",
@@ -53,46 +51,45 @@ const authSlice = createSlice({
       state.name = action.payload;
     },
     SET_USER(state, action) {
-      ;
       const profile = action.payload;
-      console.log(profile)
-      state.user._id = profile._id
+      console.log(profile);
+      state.user._id = profile._id;
       state.user.name = profile.name;
       state.user.email = profile.email;
       state.user.phoneNumber = profile.phoneNumber;
       state.user.bio = profile.bio;
       state.user.photo = profile.photo;
-      state.user.role= profile.role;
+      state.user.role = profile.role;
     },
   },
-  extraReducers : (builder)=>{
+  extraReducers: (builder) => {
     builder
-    //pending cases
-    .addCase(updateUserData.pending, (state) => {
-      state.isLoading = true;
-      state.isSuccess = false;
-      state.isError = false;
-    })
+      //pending cases
+      .addCase(updateUserData.pending, (state) => {
+        state.isLoading = true;
+        state.isSuccess = false;
+        state.isError = false;
+      })
       //fulfilled cases
       .addCase(updateUserData.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
         state.isError = false;
         toast.success("user updated successfully");
-    })
-    //rejected cases
-    .addCase(updateUserData.rejected, (state, action) => {
-      state.isLoading = false;
-      state.isError = true;
-      state.message = action.payload;
-      toast.error(action.payload);
-    });
-  }
+      })
+      //rejected cases
+      .addCase(updateUserData.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+        toast.error(action.payload);
+      });
+  },
 });
 const persistConfig = {
-  key: 'root',
+  key: "root",
   storage,
-  whitelist: ['auth'], // Persist only the 'auth' slice
+  whitelist: ["auth"], // Persist only the 'auth' slice
 };
 const persistedReducer = persistReducer(persistConfig, authSlice.reducer);
 export const { SET_LOGIN, SET_NAME, SET_USER } = authSlice.actions;

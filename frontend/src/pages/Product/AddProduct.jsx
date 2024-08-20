@@ -23,7 +23,6 @@ const AddProduct = ({ onProductAdded }) => {
 
   useEffect(() => {
     const getexsistingProducts = async () => {
-      debugger;
       try {
         const res = await dispatch(getProducts());
         setExistingProducts(res.payload);

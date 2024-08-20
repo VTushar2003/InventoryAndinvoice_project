@@ -99,7 +99,6 @@ export const resetPassword = async (userData, resetToken) => {
 
 // Get Login Status
 export const getLoginStatus = async () => {
-  
   try {
     const response = await axios.get(
       `${BACKEND_URL}/api/usersDetails/LoggedIn`
@@ -114,8 +113,6 @@ export const getLoginStatus = async () => {
   }
 };
 
-
-
 // Get User Profile
 export const getUser = async () => {
   try {
@@ -126,12 +123,11 @@ export const getUser = async () => {
       (error.response && error.response.data && error.response.data.message) ||
       error.message ||
       error.toString();
-    toast.error(message);
   }
 };
 
 // Update Profile
-export const updateUser = async ( _id, formData ) => {
+export const updateUser = async (_id, formData) => {
   const response = await axios.put(
     `${BACKEND_URL}/api/usersDetails/updateuser/${_id}`,
     formData,

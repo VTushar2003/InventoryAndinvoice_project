@@ -27,7 +27,7 @@ const UsersTable = () => {
 
   //fetch all users from the database
   const getAllUsers = async () => {
-    ;
+    
     try {
       const res = await axios.get(`${UserBaseUrl}/getallusers`);
       const filterCurrentUser = res.data.filter(

@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 export const BACKEND_URL = "http://localhost:3000/api/invoice";
 
 export const createInvoice = async (invoiceData) => {
+  debugger;
   try {
     const res = await axios.post(BACKEND_URL, invoiceData, {
       headers: {

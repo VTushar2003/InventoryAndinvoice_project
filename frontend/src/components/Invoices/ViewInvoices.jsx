@@ -20,7 +20,6 @@ const ViewInvoices = ({ visible, onClose, invoiceDets }) => {
     doc.text(`Customer: ${invoiceDets.customer.CustomerName}`, 14, 40);
     doc.text(`Email: ${invoiceDets.customer.customerEmail}`, 14, 50);
     doc.text(`Address: ${invoiceDets.customer.CustomerAddress}`, 14, 60);
-
     // AutoTable configuration for invoice items
     doc.autoTable({
       startY: 70,

@@ -9,7 +9,7 @@ const useRedirectLoggedOutUser = (path) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-    const getLoginStatus = async () => {
+  const getLoginStatus = async () => {
     try {
       const res = await axios.get('http://localhost:3000/api/usersDetails/LoggedIn');
       return res.data.LoggedIn;
@@ -38,7 +38,6 @@ const useRedirectLoggedOutUser = (path) => {
     redirectLoggedOutUser();
   }, [navigate, path]);
 
-  // No return statement needed
 };
 
 export default useRedirectLoggedOutUser;

@@ -85,7 +85,7 @@ const updateInvoiceStatus = asyncHandler(async (req, res) => {
     dueDate,
     invoiceDate,
     addedItems,
-    removedItems, // New field for items to be removed
+    removedItems,
     invoiceOrder,
   } = req.body;
   const { id } = req.params;
@@ -96,7 +96,7 @@ const updateInvoiceStatus = asyncHandler(async (req, res) => {
     throw new Error("Invoice not found");
   }
 
-  // Ensure amountPaid is a number if provided
+  //  amountPaid is a number
   let parsedAmountPaid;
   if (amountPaid !== undefined) {
     parsedAmountPaid = parseFloat(amountPaid);
@@ -231,7 +231,7 @@ const updateInvoiceStatus = asyncHandler(async (req, res) => {
 const deleteInvoice = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
-  const invoice = await Invoice.findById(id);
+  const invoice = await Invoice.findById(id).populate("items.product");
   if (!invoice) {
     res.status(404);
     throw new Error("Invoice not found");
@@ -249,7 +249,14 @@ const deleteInvoice = asyncHandler(async (req, res) => {
 
     await customer.save();
   }
-
+  // Return products to inventory
+  for (const item of invoice.items) {
+    const product = await Product.findById(item.product._id);
+    if (product) {
+      product.quantity += item.quantity;
+      await product.save();
+    }
+  }
   // Delete the invoice
   await invoice.deleteOne();
   res.status(200).json({ message: "Invoice deleted successfully" });

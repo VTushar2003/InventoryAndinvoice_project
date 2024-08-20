@@ -91,8 +91,6 @@ const createUser = asyncHandler(async (req, res) => {
     throw new Error("User already exists, try another email");
   }
 
-  
-
   // Create new user
   const user = new usersDetails({
     name,
@@ -294,9 +292,8 @@ const updateUser = asyncHandler(async (req, res) => {
 
 // Change password
 const changePassword = asyncHandler(async (req, res) => {
-  const { id } = req.params;
   const { oldPassword, password } = req.body;
-  const user = await usersDetails.findById(id);
+  const user = await usersDetails.findById(req.user._id);
 
   if (!user) {
     res.status(400);
@@ -310,7 +307,7 @@ const changePassword = asyncHandler(async (req, res) => {
   // Check if old password is correct
   const passwordIsCorrect = await bcrypt.compare(oldPassword, user.password);
 
-  if (passwordIsCorrect) {
+  if (user && passwordIsCorrect) {
     user.password = password;
     await user.save();
     res.status(200).json({ message: "Password changed successfully" });
@@ -438,7 +435,23 @@ const getAllUsers = asyncHandler(async (req, res) => {
 
   res.status(200).json(users);
 });
-//create user
+
+//check email exist or not
+const checkEmailExists = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    res.status(400);
+    throw new Error("Email is required");
+  }
+
+  const userExists = await usersDetails.findOne({ email });
+  if (userExists) {
+    res.status(200).json({ exists: true });
+  } else {
+    res.status(200).json({ exists: false });
+  }
+});
 
 module.exports = {
   registerUser,
@@ -453,5 +466,6 @@ module.exports = {
   deleteUser,
   getAllUsers,
   getUserById,
-  createUser
+  createUser,
+  checkEmailExists,
 };

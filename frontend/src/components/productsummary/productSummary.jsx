@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Col, Row, Space, Typography } from "antd";
+import { Col, Row, Typography } from "antd";
 import { FaIndianRupeeSign } from "react-icons/fa6";
 import { TbCategory } from "react-icons/tb";
 import {
   MdOutlineRemoveShoppingCart,
   MdOutlineShoppingCart,
 } from "react-icons/md";
-
 import axios from "axios";
 
 // Format Amount
@@ -38,7 +37,7 @@ const ProductSummary = () => {
           new Set(products.map((product) => product.category)).size
         );
         setOutOfStock(
-          products.filter((product) => product.quantity == 0).length
+          products.filter((product) => product.quantity === 0).length
         );
       } catch (error) {
         console.error("Error fetching products:", error);
@@ -49,59 +48,55 @@ const ProductSummary = () => {
   }, []);
 
   return (
-    <>
-      <Row className="h-32 mx-auto overflow-x-auto">
-        <Space size={20}>
-          <Col className="bg-[--light-blue] w-[13rem] h-[15vh] flex items-center pl-[.5rem] rounded-md justify-evenly hover:-translate-y-2 transition-all">
-            <MdOutlineShoppingCart className="text-[2.5rem] p-[.5rem] text-white rounded-full border-2" />
-            <div>
-              <Typography.Text className="text-[1rem] font-semibold text-white">
-                {" "}
-                Total Products
-              </Typography.Text>
-              <h1 className="text-center text-white font-[grifter] text-[1.5rem]">
-                {totalProducts}
-              </h1>
-            </div>
-          </Col>
-          <Col className="hover:-translate-y-2 transition-all bg-green-600 w-[13rem] h-[15vh] flex items-center pl-[.5rem] rounded-md justify-evenly">
-            <FaIndianRupeeSign className="text-[2.5rem] p-[.5rem] text-white rounded-full border-2" />
-            <div>
-              <Typography.Text className="text-[1rem] font-semibold text-white">
-                {" "}
-                Total Store Value
-              </Typography.Text>
-              <h1 className="text-center text-white font-[grifter] text-[1.2rem]">{`Rs ${formatNumbers(
-                totalStoreValue.toFixed(2)
-              )}`}</h1>
-            </div>
-          </Col>
-          <Col className="hover:-translate-y-2 transition-all bg-red-600 w-[13rem] h-[15vh] flex items-center pl-[.5rem] rounded-md justify-evenly">
-            <MdOutlineRemoveShoppingCart className="text-[2.5rem] p-[.5rem] text-white rounded-full border-2" />
-            <div>
-              <Typography.Text className="text-[1rem] font-semibold text-white">
-                {" "}
-                Out of stock
-              </Typography.Text>
-              <h1 className="text-center text-white font-[grifter] text-[1.5rem]">
-                {outOfStock}
-              </h1>
-            </div>
-          </Col>
-          <Col className="hover:-translate-y-2 transition-all bg-[--light-blue] w-[13rem] h-[15vh] flex items-center pl-[.5rem] rounded-md justify-evenly">
-            <TbCategory className="text-[2.5rem] p-[.5rem] text-white rounded-full border-2" />
-            <div>
-              <Typography.Text className="text-[1rem] font-semibold text-white">
-                Total Categories
-              </Typography.Text>
-              <h1 className="text-center text-white font-[grifter] text-[1.5rem]">
-                {totalCategories}
-              </h1>
-            </div>
-          </Col>
-        </Space>
+    <div className=" flex items-start justify-start w-fit mb-4 ">
+      <Row className="h-auto w-max mx-auto overflow-x-auto gap-4 border-2 flex-wrap items-stretch border-gray-300 bg-white ">
+        <Col className="flex-1 max-w-6 min-w-[10rem] flex flex-col  items-center p-4 rounded-md justify-evenly transition-transform transform hover:-translate-y-2 ">
+          <MdOutlineShoppingCart className="text-[2.5rem] p-[.5rem] text-white bg-[--light-blue] rounded-full border-2" />
+          <div>
+            <h1 className="text-center  font-[grifter] text-[1.1rem]">
+              {totalProducts}
+            </h1>
+            <Typography.Text className="text-[1rem] font-semibold">
+              Total Products
+            </Typography.Text>
+          </div>
+        </Col>
+
+        <Col className="flex-1 max-w-6 min-w-[10rem] flex flex-col  items-center p-4  justify-evenly transition-transform transform hover:-translate-y-2 ">
+          <FaIndianRupeeSign className="text-[2.5rem] p-[.5rem] text-white bg-green-500 rounded-full border-2" />
+          <div>
+            <h1 className="text-center  font-[grifter] text-[1.1rem] ">{`₹ ${formatNumbers(
+              totalStoreValue.toFixed(2)
+            )}`}</h1>
+            <Typography.Text className="text-[1rem] font-semibold ">
+              Total Store Value
+            </Typography.Text>
+          </div>
+        </Col>
+        <Col className="flex-1 max-w-6 min-w-[10rem] flex flex-col  items-center p-4 rounded-md justify-evenly transition-transform transform hover:-translate-y-2 ">
+          <MdOutlineRemoveShoppingCart className="text-[2.5rem] p-[.5rem] text-white bg-red-500 rounded-full border-2" />
+          <div>
+            <h1 className="text-center font-[grifter] text-[1.1rem]">
+              {outOfStock}
+            </h1>
+            <Typography.Text className="text-[1rem] font-semibold ">
+              Out of stock
+            </Typography.Text>
+          </div>
+        </Col>
+        <Col className="flex-1 max-w-6 min-w-[10rem] flex flex-col  items-center p-4 rounded-md justify-evenly transition-transform transform hover:-translate-y-2">
+          <TbCategory className="text-[2.5rem] p-[.5rem] text-white bg-light-blue-500 rounded-full border-2" />
+          <div>
+            <h1 className="text-center font-[grifter] text-[1.1rem]">
+              {totalCategories}
+            </h1>
+            <Typography.Text className="text-[1rem] font-semibold">
+              Total Categories
+            </Typography.Text>
+          </div>
+        </Col>
       </Row>
-    </>
+    </div>
   );
 };
 
