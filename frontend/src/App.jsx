@@ -19,6 +19,7 @@ import Supplier from "./pages/Purchases/Supplier";
 import ChangePassword from "./components/ChangePassword/ChangePassword";
 import PurchaseOrder from "./pages/Purchases/PurchaseOrder";
 axios.defaults.withCredentials = true;
+import { QueryClient, QueryClientProvider } from 'react-query';
 
 const App = () => {
   const dispatch = useDispatch();
@@ -32,26 +33,30 @@ const App = () => {
     loginStatus();
   }, [dispatch]);
 
+  const queryClient = new QueryClient();
+
   return (
     <>
-      <Toaster />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/Dashboard" element={<Dashboard />} />
-          <Route path="/register" element={<RegisterAdmin />} />
-          <Route path="/login" element={<LoginUser />} />
-          <Route path="/Product" element={<Product />} />
-          <Route path="/Customers" element={<Customer />} />
-          <Route path="/Invoices" element={<Invoice />} />
-          <Route path="/Suppliers" element={<Supplier />} />
-          <Route path="/PurchaseOrder" element={<PurchaseOrder />} />
-          <Route path="/Users" element={<Users />} />
-          <Route path="/editprofile" element={<EditUserProfile />} />
-          <Route path="/ChangePassword" element={<ChangePassword />} />
-          <Route path="/Profile" element={<Profile />} />
-        </Routes>
-      </BrowserRouter>
+      <QueryClientProvider client={queryClient}>
+        <Toaster />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/Dashboard" element={<Dashboard />} />
+            <Route path="/register" element={<RegisterAdmin />} />
+            <Route path="/login" element={<LoginUser />} />
+            <Route path="/Product" element={<Product />} />
+            <Route path="/Customers" element={<Customer />} />
+            <Route path="/Invoices" element={<Invoice />} />
+            <Route path="/Suppliers" element={<Supplier />} />
+            <Route path="/PurchaseOrder" element={<PurchaseOrder />} />
+            <Route path="/Users" element={<Users />} />
+            <Route path="/editprofile" element={<EditUserProfile />} />
+            <Route path="/ChangePassword" element={<ChangePassword />} />
+            <Route path="/Profile" element={<Profile />} />
+          </Routes>
+        </BrowserRouter>
+      </QueryClientProvider>
     </>
   );
 };

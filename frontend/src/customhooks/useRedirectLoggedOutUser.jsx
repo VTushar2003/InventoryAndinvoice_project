@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, { useEffect } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
@@ -9,7 +9,7 @@ const useRedirectLoggedOutUser = (path) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const getLoginStatus = async () => {
+  const getLoginStatus = useCallback(async () => {
     try {
       const res = await axios.get('http://localhost:3000/api/usersDetails/LoggedIn');
       return res.data.LoggedIn;
@@ -22,7 +22,7 @@ const useRedirectLoggedOutUser = (path) => {
       toast.error(message);
       return false;
     }
-  };
+  }, []);
 
   useEffect(() => {
     const redirectLoggedOutUser = async () => {
@@ -36,7 +36,7 @@ const useRedirectLoggedOutUser = (path) => {
     };
 
     redirectLoggedOutUser();
-  }, [navigate, path]);
+  }, [getLoginStatus, dispatch, navigate, path]);
 
 };
 

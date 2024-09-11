@@ -16,6 +16,7 @@ import {
 import ViewInvoices from "./ViewInvoices";
 import InvoiceEdit from "./EditInvoice";
 import AddInvoice from "./AddInvoice";
+import toast from "react-hot-toast";
 
 const initialState = {
   customerName: "",
@@ -69,6 +70,7 @@ const InvoiceData = () => {
         console.error("Unexpected response structure:", res);
       }
     } catch (error) {
+      toast.error("Something Went Wrong!");
       console.log("Error fetching Invoices:", error);
     }
   };
@@ -90,6 +92,7 @@ const InvoiceData = () => {
       setViewModalVisible(true);
       console.log("Invoice Details:", result);
     } catch (error) {
+      toast.error("Something Went Wrong!");
       console.error("Failed in getting Invoice details", error);
     }
   };

@@ -1,20 +1,29 @@
-import React, { useRef, useState, useEffect } from "react";
-import { Space, Table, Input, Button } from "antd";
+import React, { useRef, useState, useEffect, useMemo } from "react";
+import { Space, Table, Input, Button, Modal } from "antd";
 import axios from "axios";
 import { EditOutlined, EyeOutlined, DeleteOutlined } from "@ant-design/icons";
 import { useDispatch } from "react-redux";
-import {
-  deleteProduct,
-  getProduct,
-  updateProduct,
-} from "../../redux/rootReducer";
+import { deleteProduct, getProduct, updateProduct } from "../../redux/rootReducer";
 import EditProduct from "../../pages/Product/EditProduct";
 import ProductDetails from "../productDetails/ProductDetails";
 import AddProduct from "../../pages/Product/AddProduct";
 import { SearchOutlined } from '@ant-design/icons';
 import Highlighter from 'react-highlight-words';
+import { useQuery, useMutation, useQueryClient } from 'react-query';
+
+const { confirm } = Modal;
+
+const fetchProducts = async () => {
+  const response = await axios.get("http://localhost:3000/api/products/");
+  return response.data.map((item, index) => ({
+    ...item,
+    key: item.productId || index, // Ensure each item has a unique key
+  }));
+};
+
 const ProductData = () => {
   const dispatch = useDispatch();
+  const queryClient = useQueryClient();
 
   //edit product state
   const [editModalVisible, setEditModalVisible] = useState(false);
@@ -24,42 +33,40 @@ const ProductData = () => {
   const [viewModalVisible, setViewModalVisible] = useState(false);
   const [viewingProduct, setViewingProduct] = useState(null);
 
-  //get products state
-  const [items, setItems] = useState([]);
-  const url = "http://localhost:3000/";
+  // Get products data using react-query
+  const { data: items = [], refetch } = useQuery('products', fetchProducts);
 
-  //replace blank space with null
-  const replaceEmptyWithNull = (item) => {
-    const newItem = {};
-    for (const key in item) {
-      newItem[key] = item[key] === "" ? null : item[key];
+  // Mutation to delete a product
+  const mutationDelete = useMutation(
+    (productId) => dispatch(deleteProduct(productId)),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries('products');
+      },
     }
-    return newItem;
-  };
+  );
 
-  const getAllProducts = async () => {
-    try {
-      const response = await axios.get(`${url}api/products/`);
-      const productsWithKeys = response.data
-        .map((item, index) => ({
-          ...item,
-          key: item.productId || index, // Ensure each item has a unique key
-        }))
-        .map((item) => replaceEmptyWithNull(item));
-      setItems(productsWithKeys);
-      console.log(response.data);
-    } catch (error) {
-      console.log("Error fetching products:", error);
+  // Mutation to update a product
+  const mutationUpdate = useMutation(
+    ({ productId, formData }) => dispatch(updateProduct({ productId, formData })),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries('products');
+        setEditModalVisible(false);
+      },
     }
-  };
+  );
 
-  useEffect(() => {
-    getAllProducts();
-  }, [dispatch]);
+  // Mutation to add a product
+  const mutationAdd = useMutation(
+    () => fetchProducts(),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries('products');
+      },
+    }
+  );
 
-  //getproduct with id
-
-  // Get product with ID
   const fetchProductById = async (productId) => {
     try {
       const result = await dispatch(getProduct(productId));
@@ -70,39 +77,35 @@ const ProductData = () => {
     }
   };
 
-  const delProduct = async (productId) => {
-    try {
-      await dispatch(deleteProduct(productId));
-      console.log("Product deleted successfully:", productId);
-      // Update products list after successful deletion
-      getAllProducts();
-    } catch (error) {
-      console.error("Error deleting product:", error);
-    }
+  const delProduct = (productId) => {
+    confirm({
+      title: "Are you sure you want to delete this product?",
+      content: "This action cannot be undone.",
+      okText: "Yes, delete it",
+      okType: "danger",
+      cancelText: "No, cancel",
+      onOk: () => {
+        mutationDelete.mutate(productId);
+      },
+      onCancel() {
+        console.log("Deletion cancelled");
+      },
+    });
   };
 
-  //Add Product
-
-  const AddProductData = async () => {
-    try {
-      getAllProducts();
-      console.log("added complete");
-    } catch (error) {
-      console.error("Error adding products:", error);
-    }
+  const AddProductData = () => {
+    mutationAdd.mutate();
+    console.log("Product added and list updated");
   };
 
-  //edit product
   const editProduct = async (productId, formData) => {
     try {
-
-      await dispatch(updateProduct({ productId, formData }));
-      setEditModalVisible(false);
-      getAllProducts();
+      mutationUpdate.mutate({ productId, formData });
     } catch (error) {
       console.error("Error updating product:", error);
     }
   };
+
   //handle search
   const [searchText, setSearchText] = useState('');
   const [searchedColumn, setSearchedColumn] = useState("");
@@ -113,16 +116,16 @@ const ProductData = () => {
     setSearchText(selectedKeys[0]);
     setSearchedColumn(dataIndex);
   };
+
   const handleReset = (clearFilters) => {
     clearFilters();
     setSearchText('');
   };
+
   const getColumnSearchProps = (dataIndex) => ({
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => (
       <div
-        style={{
-          padding: 8,
-        }}
+        style={{ padding: 8 }}
         onKeyDown={(e) => e.stopPropagation()}
       >
         <Input
@@ -131,10 +134,7 @@ const ProductData = () => {
           value={selectedKeys[0]}
           onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
           onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
-          style={{
-            marginBottom: 8,
-            display: 'block',
-          }}
+          style={{ marginBottom: 8, display: 'block' }}
         />
         <Space>
           <Button
@@ -142,18 +142,14 @@ const ProductData = () => {
             onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
             icon={<SearchOutlined />}
             size="small"
-            style={{
-              width: 90,
-            }}
+            style={{ width: 90 }}
           >
             Search
           </Button>
           <Button
             onClick={() => clearFilters && handleReset(clearFilters)}
             size="small"
-            style={{
-              width: 90,
-            }}
+            style={{ width: 90 }}
           >
             Reset
           </Button>
@@ -161,9 +157,7 @@ const ProductData = () => {
             type="link"
             size="small"
             onClick={() => {
-              confirm({
-                closeDropdown: false,
-              });
+              confirm({ closeDropdown: false });
               setSearchText(selectedKeys[0]);
               setSearchedColumn(dataIndex);
             }}
@@ -183,11 +177,7 @@ const ProductData = () => {
       </div>
     ),
     filterIcon: (filtered) => (
-      <SearchOutlined
-        style={{
-          color: "white",
-        }}
-      />
+      <SearchOutlined style={{ color: "white" }} />
     ),
     onFilter: (value, record) =>
       record[dataIndex] ? record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()) : console.log("error"),
@@ -199,10 +189,7 @@ const ProductData = () => {
     render: (text) =>
       searchedColumn === dataIndex ? (
         <Highlighter
-          highlightStyle={{
-            backgroundColor: '#ffc069',
-            padding: 0,
-          }}
+          highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
           searchWords={[searchText]}
           autoEscape
           textToHighlight={text ? text.toString() : ''}
@@ -211,7 +198,8 @@ const ProductData = () => {
         text
       ),
   });
-  const columns = [
+
+  const columns = useMemo(() => [
     {
       title: "Product_Id",
       dataIndex: "productId",
@@ -280,7 +268,8 @@ const ProductData = () => {
           <button
             className="hover:text-blue-500"
             onClick={() => {
-              setViewModalVisible(true), fetchProductById(record.productId);
+              setViewModalVisible(true);
+              fetchProductById(record.productId);
             }}
           >
             <EyeOutlined />
@@ -306,7 +295,7 @@ const ProductData = () => {
       ),
       responsive: ["sm"],
     },
-  ];
+  ], [searchText, searchedColumn, items]);
 
   return (
     <>
@@ -315,7 +304,6 @@ const ProductData = () => {
       </div>
 
       <Table
-
         rowClassName="text-[1rem] text-center"
         bordered={true}
         columns={columns}

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import DefaultLayout from "../../components/layout/Layout";
-import useRedirectLoggedOutUser from "./../../customhooks/useRedirectLoggedOutUser";
 import { useDispatch } from "react-redux";
 import { getUser } from "../../services/Authservice";
 import { SET_NAME, SET_USER } from "../../redux/auth/AuthReducer";
@@ -8,7 +7,6 @@ import { Card, Descriptions, Image } from "antd";
 import toast from "react-hot-toast";
 
 const Profile = () => {
-  useRedirectLoggedOutUser("/login");
   const dispatch = useDispatch();
   const [profile, setProfile] = useState(null);
 

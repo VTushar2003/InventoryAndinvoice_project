@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 import logo from "../../pages/Home/logo.svg";
 import {
   MenuFoldOutlined,
@@ -10,7 +10,7 @@ import {
   FileDoneOutlined,
   ShoppingOutlined,
 } from "@ant-design/icons";
-import { Button, Layout, Menu, theme } from "antd";
+import { Button, Layout, Menu, theme, Spin } from "antd";
 import ButtonInfo from "../buttons/Button";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -21,17 +21,14 @@ import {
   SET_USER,
 } from "../../redux/auth/AuthReducer";
 import { getUser } from "../../services/Authservice";
-import toast from "react-hot-toast";
-import useRedirectLoggedOutUser from "../../customhooks/useRedirectLoggedOutUser";
-import { Footer } from "antd/es/layout/layout";
+import Loading from '../Loading/Loading';
 
 const { Header, Sider, Content } = Layout;
 
 const DefaultLayout = ({ children }) => {
-  useRedirectLoggedOutUser("/login");
-
   const dispatch = useDispatch();
   const [user, setUser] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function getUserData() {
@@ -41,12 +38,19 @@ const DefaultLayout = ({ children }) => {
         dispatch(SET_NAME(data.name));
         setUser(data);
       } catch (error) {
-        console.error("error fetching user");
-        toast.error("Something Went Wrong");
+        console.error("Error fetching user");
       }
     }
     getUserData();
   }, [dispatch]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const name = useSelector(selectName);
   const [collapsed, setCollapsed] = useState(false);
@@ -122,7 +126,6 @@ const DefaultLayout = ({ children }) => {
               <img src={logo} alt="logo" />
             </Link>
           )}
-
           <h1 className="font-[grifter] text-[--light-blue]">INVENTRA</h1>
         </div>
         <div className="menu-container">
@@ -155,7 +158,7 @@ const DefaultLayout = ({ children }) => {
           />
           <div className="flex items-center justify-center space-x-2">
             <h1 className="text-black text-[1.32rem] font-thin">Welcome, </h1>
-            <span className="text-[#1677FF] text-[1.32rem]">{name}</span>
+            <span className="text-[--light-blue] text-[1.32rem]">{name}</span>
           </div>
           <ButtonInfo />
         </Header>
@@ -169,25 +172,29 @@ const DefaultLayout = ({ children }) => {
           }}
           className="overflow-auto"
         >
-          {children}
+          {loading ? (
+            <div className="flex-col gap-4 w-full h-full flex items-center justify-center">
+              <Loading />
+            </div>
+          ) : (
+            children
+          )}
         </Content>
       </Layout>
 
-      <style jsx="true" >{`
+      <style jsx="true">{`
         .menu-container {
           height: calc(100vh - 5rem); /* Adjust the height to fill the remaining space */
           overflow-y: auto;
         }
-        
+
         @media (min-width: 768px) {
           .menu-container {
             overflow-y: visible;
           }
         }
       `}</style>
-
     </Layout>
-
   );
 };
 

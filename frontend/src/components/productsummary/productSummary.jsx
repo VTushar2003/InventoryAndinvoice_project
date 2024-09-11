@@ -48,46 +48,76 @@ const ProductSummary = () => {
   }, []);
 
   return (
-    <div className=" flex items-start justify-start w-fit mb-4 ">
-      <Row className="h-auto w-max mx-auto overflow-x-auto gap-4 border-2 flex-wrap items-stretch border-gray-300 bg-white ">
-        <Col className="flex-1 max-w-6 min-w-[10rem] flex flex-col  items-center p-4 rounded-md justify-evenly transition-transform transform hover:-translate-y-2 ">
+    <div className="flex items-start justify-start w-full mb-4">
+      <Row
+        className="h-auto w-full mx-auto overflow-y gap-4 inline-flex items-center border-gray-300 bg-white justify-center"
+
+      >
+        <Col
+          xs={24}
+          sm={12}
+          md={6}
+          lg={4}
+          className="flex flex-col items-center p-4 rounded-md justify-evenly transition-transform transform hover:-translate-y-2"
+        >
           <MdOutlineShoppingCart className="text-[2.5rem] p-[.5rem] text-white bg-[--light-blue] rounded-full border-2" />
           <div>
-            <h1 className="text-center  font-[grifter] text-[1.1rem]">
+            <h1 className="text-center font-[Sans] text-[1.5rem]">
               {totalProducts}
             </h1>
-            <Typography.Text className="text-[1rem] font-semibold">
+            <Typography.Text className="text-[1rem] font-[Sans] font-semibold">
               Total Products
             </Typography.Text>
           </div>
         </Col>
 
-        <Col className="flex-1 max-w-6 min-w-[10rem] flex flex-col  items-center p-4  justify-evenly transition-transform transform hover:-translate-y-2 ">
+        <Col
+          xs={24}
+          sm={12}
+          md={6}
+          lg={4}
+          className="flex flex-col items-center p-4 justify-evenly transition-transform transform hover:-translate-y-2"
+        >
           <FaIndianRupeeSign className="text-[2.5rem] p-[.5rem] text-white bg-green-500 rounded-full border-2" />
           <div>
-            <h1 className="text-center  font-[grifter] text-[1.1rem] ">{`₹ ${formatNumbers(
-              totalStoreValue.toFixed(2)
-            )}`}</h1>
-            <Typography.Text className="text-[1rem] font-semibold ">
+            <h1 className="text-center font-[Sans] text-[1.3rem]">
+              {`₹ ${formatNumbers(
+                totalStoreValue.toFixed(2)
+              )}`}</h1>
+            <Typography.Text className="text-[1rem] font-semibold">
               Total Store Value
             </Typography.Text>
           </div>
         </Col>
-        <Col className="flex-1 max-w-6 min-w-[10rem] flex flex-col  items-center p-4 rounded-md justify-evenly transition-transform transform hover:-translate-y-2 ">
+
+        <Col
+          xs={24}
+          sm={12}
+          md={6}
+          lg={4}
+          className="flex flex-col items-center p-4 rounded-md justify-evenly transition-transform transform hover:-translate-y-2"
+        >
           <MdOutlineRemoveShoppingCart className="text-[2.5rem] p-[.5rem] text-white bg-red-500 rounded-full border-2" />
           <div>
-            <h1 className="text-center font-[grifter] text-[1.1rem]">
+            <h1 className="text-center font-[Sans] text-[1.5rem]">
               {outOfStock}
             </h1>
-            <Typography.Text className="text-[1rem] font-semibold ">
+            <Typography.Text className="text-[1rem] font-semibold">
               Out of stock
             </Typography.Text>
           </div>
         </Col>
-        <Col className="flex-1 max-w-6 min-w-[10rem] flex flex-col  items-center p-4 rounded-md justify-evenly transition-transform transform hover:-translate-y-2">
+
+        <Col
+          xs={24}
+          sm={12}
+          md={6}
+          lg={4}
+          className="flex flex-col items-center p-4 rounded-md justify-evenly transition-transform transform hover:-translate-y-2"
+        >
           <TbCategory className="text-[2.5rem] p-[.5rem] text-white bg-light-blue-500 rounded-full border-2" />
           <div>
-            <h1 className="text-center font-[grifter] text-[1.1rem]">
+            <h1 className="text-center font-[Sans] text-[1.5rem]">
               {totalCategories}
             </h1>
             <Typography.Text className="text-[1rem] font-semibold">

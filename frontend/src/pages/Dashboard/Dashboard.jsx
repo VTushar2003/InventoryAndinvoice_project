@@ -21,13 +21,17 @@ const Dashboard = () => {
 
   return (
     <DefaultLayout>
-      <h1 className="text-black text-[1.5rem] pb-2 font-[gilroy] font-normal">
-        Inventory Stats
-      </h1>
-      <ProductSummary />
-      <hr className="mb-[1rem] border-[.1rem]" />
+      <div className="border-[1px] border-[#b8babe] rounded-xl overflow-hidden mb-4">
+        <div className="flex items-center border-[#b8babe] border-b-[1px] bg-[#F9F9FB] justify-start p-2">
+          <h1 className="text-black pl-4 text-[1.5rem] font-[gilroy] font-normal">
+            Inventory Stats
+          </h1>
+        </div>
+        <ProductSummary />
+      </div>
+
       <div className="flex flex-col lg:flex-row lg:space-x-6">
-        <div className="flex-1 min-w-[300px]">
+        <div className="flex-1 min-w-[300px] ">
           <Chart />
         </div>
       </div>

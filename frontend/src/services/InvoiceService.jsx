@@ -25,7 +25,6 @@ export const getInvoives = async () => {
     console.log(res.data);
     return res.data;
   } catch (error) {
-    toast.error("Something Went Wrong!");
     console.log("Something Went Wrong!", error);
   }
 };
@@ -36,7 +35,6 @@ export const getInvoiceById = async (id) => {
     console.log(res.data);
     return res.data;
   } catch (error) {
-    toast.error("Something Went Wrong!");
     console.log("Something Went Wrong!", error);
   }
 };
