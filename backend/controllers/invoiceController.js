@@ -11,6 +11,8 @@ const createInvoice = asyncHandler(async (req, res) => {
     items,
     paymentMode,
     amountPaid,
+    discount, // Adding discount to req.body
+    tax, // Adding tax to req.body
     status,
     invoiceDate,
     dueDate,
@@ -47,11 +49,16 @@ const createInvoice = asyncHandler(async (req, res) => {
     })
   );
 
-  // Calculate total amount
-  const totalAmount = productDetails.reduce(
+  // Calculate base total amount
+  const baseTotalAmount = productDetails.reduce(
     (total, item) => total + item.quantity * item.price,
     0
   );
+
+  // Apply discount and tax
+  const discountAmount = (baseTotalAmount * (discount || 0)) / 100; // Default to 0 if discount is not provided
+  const taxAmount = ((baseTotalAmount - discountAmount) * (tax || 0)) / 100; // Apply tax after discount
+  const totalAmount = baseTotalAmount - discountAmount + taxAmount;
 
   const invoice = new Invoice({
     user: req.user._id,
@@ -65,6 +72,8 @@ const createInvoice = asyncHandler(async (req, res) => {
     status,
     invoiceDate,
     dueDate,
+    discount: discount || 0, // Store discount value
+    tax: tax || 0, // Store tax value
   });
 
   const createdInvoice = await invoice.save();

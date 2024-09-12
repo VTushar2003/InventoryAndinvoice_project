@@ -14,11 +14,18 @@ const AddInvoice = ({ visible, onClose, onSubmit }) => {
   const [customers, setCustomers] = useState([]);
   const [products, setProducts] = useState([]);
   const [totalAmount, setTotalAmount] = useState(0);
+  const [discount, setDiscount] = useState(0);
+  const [tax, setTax] = useState(0);
+  const [amountPaid, setAmountPaid] = useState(0);
 
   const handleClose = (e) => {
     e.preventDefault();
     onClose();
     form.resetFields();
+    setTotalAmount(0);
+    setDiscount(0);
+    setTax(0);
+    setAmountPaid(0);
   };
 
   useEffect(() => {
@@ -36,7 +43,6 @@ const AddInvoice = ({ visible, onClose, onSubmit }) => {
     };
 
     const fetchProducts = async () => {
-      debugger;
       try {
         const response = await axios.get(`http://localhost:3000/api/products/`);
         if (response.data) {
@@ -60,6 +66,31 @@ const AddInvoice = ({ visible, onClose, onSubmit }) => {
     }
   }, [visible, form]);
 
+
+  const calculateTotalAmount = (items) => {
+    let total = items.reduce((acc, item) => {
+      const product = products.find((p) => p.productId === item.productId);
+      return acc + (product ? product.price * item.quantity : 0);
+    }, 0);
+
+    // Apply discount
+    total -= (total * discount) / 100;
+
+    // Apply tax
+    total += (total * tax) / 100;
+
+    // Subtract amount paid
+    total -= amountPaid;
+
+    setTotalAmount(total);
+  };
+
+  useEffect(() => {
+    // Recalculate the total when discount, tax, or amount paid changes
+    const currentItems = form.getFieldValue("items") || [];
+    calculateTotalAmount(currentItems);
+  }, [discount, tax, amountPaid, form]);
+
   const handleOk = () => {
     form
       .validateFields()
@@ -73,14 +104,19 @@ const AddInvoice = ({ visible, onClose, onSubmit }) => {
           })),
           paymentMode: values.paymentMode,
           amountPaid: values.amountPaid,
+          discount, // Include discount value
+          tax, // Include tax value
           status: values.status,
           invoiceDate: values.invoiceDate,
           dueDate: values.dueDate,
         };
-
         onSubmit(payload);
         form.resetFields();
+        console.log(payload)
         setTotalAmount(0);
+        setDiscount(0);
+        setTax(0);
+        setAmountPaid(0);
         form.setFieldsValue({ invoiceOrder: generateInvoiceNumber() });
       })
       .catch((info) => {
@@ -103,7 +139,15 @@ const AddInvoice = ({ visible, onClose, onSubmit }) => {
         </Button>,
       ]}
     >
-      <Form form={form} layout="vertical">
+      <Form
+        form={form}
+        layout="vertical"
+        onValuesChange={(changedValues, allValues) => {
+          if (changedValues.items) {
+            calculateTotalAmount(allValues.items);
+          }
+        }}
+      >
         <Form.Item
           name="invoiceOrder"
           label="Invoice Number"
@@ -201,7 +245,7 @@ const AddInvoice = ({ visible, onClose, onSubmit }) => {
           initialValue={0}
           rules={[{ required: true, message: "Please enter amount paid!" }]}
         >
-          <Input type="number" />
+          <Input type="number" onChange={(e) => setAmountPaid(Number(e.target.value))} />
         </Form.Item>
         <Form.Item
           name="status"
@@ -228,8 +272,27 @@ const AddInvoice = ({ visible, onClose, onSubmit }) => {
         >
           <Input type="date" />
         </Form.Item>
+        <Form.Item label="Discount (%)">
+          <Input
+            placeholder="%"
+            type="number"
+            min={0}
+            max={100}
+            onChange={(e) => setDiscount(Number(e.target.value))}
+          />
+        </Form.Item>
+
+        <Form.Item label="Tax (%)">
+          <Select onChange={(value) => setTax(Number(value))}>
+            <Select.Option value={0}>0%</Select.Option>
+            <Select.Option value={5}>5%</Select.Option>
+            <Select.Option value={10}>10%</Select.Option>
+            <Select.Option value={15}>15%</Select.Option>
+          </Select>
+        </Form.Item>
+
         <Form.Item label="Total Amount">
-          <Input value={totalAmount} readOnly />
+          <Input value={totalAmount.toFixed(2)} readOnly />
         </Form.Item>
       </Form>
     </Modal>

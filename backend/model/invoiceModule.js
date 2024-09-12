@@ -58,6 +58,12 @@ const invoiceSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    tax: {
+      type: Number,
+    },
+    discount: {
+      type: Number,
+    },
   },
   { timestamps: true }
 );

@@ -19,6 +19,15 @@ h1,h2,h3,h4,h5,h6,p{
     color: black;
 }
 
+.profile-image{
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: blue;
+  display:inline-block;
+  vertical-align:middle;
+}
 *{
     margin: 0;
     padding: 0;

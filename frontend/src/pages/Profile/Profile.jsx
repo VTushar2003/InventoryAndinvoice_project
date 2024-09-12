@@ -3,7 +3,7 @@ import DefaultLayout from "../../components/layout/Layout";
 import { useDispatch } from "react-redux";
 import { getUser } from "../../services/Authservice";
 import { SET_NAME, SET_USER } from "../../redux/auth/AuthReducer";
-import { Card, Descriptions, Image } from "antd";
+import { Card, Col, Descriptions, Image, Row } from "antd";
 import toast from "react-hot-toast";
 
 const Profile = () => {
@@ -36,44 +36,62 @@ const Profile = () => {
           <p>Something went wrong. Please refresh the page.</p>
         </>
       ) : (
-        <Card className="shadow-lg">
-          <div className="Image overflow-hidden flex h-auto  items-center justify-center object-cover ">
-            <Image
-              className=" shadow-2xl w-44 h-44 rounded m-auto object-cover"
-              style={{ width: "10rem", height: "15rem" }}
-              alt="user-Profile"
-              src={imageSrc}
-            />
+        <div className="w-full h-full border border-gray-300 rounded-lg overflow-hidden shadow-lg">
+          <header className="bg-[--light-blue] py-3 pl-4">
+            <h1 className="font-[Sans] text-xl text-white">Profile: </h1>
+          </header>
+          
+          <div className="flex w-full items-center justify-around">
+            <div className="  space-y-6 h-54 w-52">
+              <h1 className="text-lg font-semibold">Photo :</h1>
+              <img src={imageSrc} alt="profile photo" className="profile-image object-cover" />
+            </div>
+
+            <div className=" w-2/3  h-fit flex items-center">
+              <Row className="text-center space-y-4">
+                <Col span={12} className="border p-2 mt-4 border-gray-400 bg-[--light-blue]">
+                  <p className=" text-white">
+                    <strong>UserName:</strong>
+                  </p>
+                </Col>
+                <Col span={12} className="border p-2 border-gray-400 rounded-tr-lg hover:bg-gray-100">
+                  {profile?.name}
+                </Col>
+
+                <Col span={12} className="border p-2 bg-[--light-blue]  border-gray-400" >
+                  <p className='text-white'>
+                    <strong>Email:</strong>
+                  </p>
+                </Col>
+                <Col span={12} className="border p-2 border-gray-400 hover:bg-gray-100">{profile?.email}</Col>
+
+                <Col span={12} className="border p-2 bg-[--light-blue]  border-gray-400">
+                  <p className='text-white'>
+                    <strong>Phone Number:</strong>
+                  </p>
+                </Col>
+                <Col span={12} className="border p-2 border-gray-400 hover:bg-gray-100">{profile?.phoneNumber}</Col>
+
+                <Col span={12} className="border p-2 bg-[--light-blue]  border-gray-400">
+                  <p className='text-white'>
+                    <strong>Role:</strong>
+                  </p>
+                </Col>
+                <Col span={12} className="border p-2 border-gray-400 hover:bg-gray-100">{profile?.role}</Col>
+                <Col span={12} className="border p-2 bg-[--light-blue]  border-gray-400">
+                  <p className='text-white text-center'>
+                    <strong>Bio:</strong>
+                  </p>
+                </Col>
+                <Col span={12} className="border p-2 border-gray-400 hover:bg-gray-100">
+                  <p className="break-words text-center">
+                    {profile?.bio}
+                  </p>
+                </Col>
+              </Row>
+            </div>
           </div>
-          <div>
-            <Descriptions
-              title="User Information"
-              labelStyle={{ color: "Black", fontWeight: "bolder" }}
-            >
-              <Descriptions.Item label="Name" labelStyle={{ fontSize: "1rem" }}>
-                {profile?.name}
-              </Descriptions.Item>
-              <Descriptions.Item
-                label="Email"
-                labelStyle={{ fontSize: "1rem" }}
-              >
-                {profile?.email}
-              </Descriptions.Item>
-              <Descriptions.Item
-                label="Contact-Info"
-                labelStyle={{ fontSize: "1rem" }}
-              >
-                {profile?.phoneNumber}
-              </Descriptions.Item>
-              <Descriptions.Item label="Role" labelStyle={{ fontSize: "1rem" }}>
-                {profile?.role}
-              </Descriptions.Item>
-              <Descriptions.Item label="Bio" labelStyle={{ fontSize: "1rem" }}>
-                {profile?.bio}
-              </Descriptions.Item>
-            </Descriptions>
-          </div>
-        </Card>
+        </div>
       )}
     </DefaultLayout>
   );

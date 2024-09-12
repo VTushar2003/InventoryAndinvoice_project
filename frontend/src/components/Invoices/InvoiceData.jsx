@@ -117,7 +117,6 @@ const InvoiceData = () => {
   };
 
   const handleAddInvoice = async (invoiceData) => {
-    debugger;
     try {
       await createInvoice(invoiceData);
       console.log("Submitting Invoice Data: ", invoiceData); // Log the invoice data

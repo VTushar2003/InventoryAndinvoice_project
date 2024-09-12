@@ -4,6 +4,7 @@ import jsPDF from "jspdf";
 import "jspdf-autotable";
 
 const ViewInvoices = ({ visible, onClose, invoiceDets }) => {
+
   const handleDownload = () => {
     const doc = new jsPDF();
 
@@ -20,6 +21,7 @@ const ViewInvoices = ({ visible, onClose, invoiceDets }) => {
     doc.text(`Customer: ${invoiceDets.customer.CustomerName}`, 14, 40);
     doc.text(`Email: ${invoiceDets.customer.customerEmail}`, 14, 50);
     doc.text(`Address: ${invoiceDets.customer.CustomerAddress}`, 14, 60);
+
     // AutoTable configuration for invoice items
     doc.autoTable({
       startY: 70,
@@ -43,20 +45,36 @@ const ViewInvoices = ({ visible, onClose, invoiceDets }) => {
       },
     });
 
-    // Set font size and style for total amount
+    // Set font size and style for additional details
     doc.setFontSize(12);
     doc.text(
       `Total Amount: ${invoiceDets.totalAmount}`,
       14,
       doc.lastAutoTable.finalY + 10
     );
+    doc.text(
+      `Discount: ${invoiceDets.discount || 0}%`,
+      14,
+      doc.lastAutoTable.finalY + 20
+    );
+    doc.text(
+      `Tax: ${invoiceDets.tax || 0}%`,
+      14,
+      doc.lastAutoTable.finalY + 30
+    );
+    doc.text(
+      `Amount Paid: ${invoiceDets.amountPaid || 0}`,
+      14,
+      doc.lastAutoTable.finalY + 40
+    );
+    doc.text(
+      `Amount Due: ${invoiceDets.amountDue || 0}`,
+      14,
+      doc.lastAutoTable.finalY + 50
+    );
 
     // Save the PDF with a specific file name
     doc.save(`invoice-${invoiceDets.invoiceOrder}.pdf`);
-  };
-
-  const handlePrint = () => {
-    window.print();
   };
 
   const columns = [
@@ -84,12 +102,7 @@ const ViewInvoices = ({ visible, onClose, invoiceDets }) => {
       key: "productPrice",
       responsive: ["sm"],
     },
-    {
-      title: "Total",
-      render: (text, record) => <span>{record.quantity * record.price}</span>,
-      key: "Total",
-      responsive: ["sm"],
-    },
+
   ];
 
   return (
@@ -103,9 +116,6 @@ const ViewInvoices = ({ visible, onClose, invoiceDets }) => {
           <div className="flex justify-end gap-4">
             <Button type="primary" onClick={handleDownload}>
               Download
-            </Button>
-            <Button type="primary" onClick={handlePrint}>
-              Print
             </Button>
           </div>
         }
@@ -154,11 +164,45 @@ const ViewInvoices = ({ visible, onClose, invoiceDets }) => {
             />
             <Descriptions
               bordered
+              className="text-center font-[Sans] "
+              labelStyle={{ fontSize: "1rem" }}>
+              <Descriptions.Item label='Discount' className="w-1/2">
+                {`${invoiceDets.discount || 0}%`}
+              </Descriptions.Item>
+            </Descriptions>
+            <Descriptions
+              bordered
+              className="text-center font-[Sans]"
+              labelStyle={{ fontSize: "1rem" }}>
+              <Descriptions.Item label='Tax' className="w-1/2">
+                {`${invoiceDets.tax || 0}%`}
+              </Descriptions.Item>
+            </Descriptions>
+            <Descriptions
+              bordered
               className="text-center font-[Sans]"
               labelStyle={{ fontSize: "1rem" }}
             >
-              <Descriptions.Item label="Sub Total:">
+              <Descriptions.Item label="Total:" className="w-1/2">
                 {invoiceDets.totalAmount}
+              </Descriptions.Item>
+            </Descriptions>
+            <Descriptions
+              bordered
+              className="text-center font-[Sans]"
+              labelStyle={{ fontSize: "1rem" }}
+            >
+              <Descriptions.Item label="Amount Paid:" className="w-1/2">
+                {invoiceDets.amountPaid}
+              </Descriptions.Item>
+            </Descriptions>
+            <Descriptions
+              bordered
+              className="text-center font-[Sans]"
+              labelStyle={{ fontSize: "1rem" }}
+            >
+              <Descriptions.Item label="After Amount Paid Total:" className="w-1/2">
+                {invoiceDets.amountDue}
               </Descriptions.Item>
             </Descriptions>
           </div>

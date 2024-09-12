@@ -82,7 +82,7 @@ const ProductSummary = () => {
           <div>
             <h1 className="text-center font-[Sans] text-[1.3rem]">
               {`₹ ${formatNumbers(
-                totalStoreValue.toFixed(2)
+                totalStoreValue.toFixed(1)
               )}`}</h1>
             <Typography.Text className="text-[1rem] font-semibold">
               Total Store Value
