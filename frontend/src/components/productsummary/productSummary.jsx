@@ -76,11 +76,11 @@ const ProductSummary = () => {
           sm={12}
           md={6}
           lg={4}
-          className="flex flex-col items-center p-4 justify-evenly transition-transform transform hover:-translate-y-2"
+          className="flex  flex-col items-center p-4 justify-evenly transition-transform transform hover:-translate-y-2"
         >
           <FaIndianRupeeSign className="text-[2.5rem] p-[.5rem] text-white bg-green-500 rounded-full border-2" />
-          <div>
-            <h1 className="text-center font-[Sans] text-[1.3rem]">
+          <div className="w-40 text-center">
+            <h1 className=" font-[Sans] text-[1.3rem]  break-all">
               {`₹ ${formatNumbers(
                 totalStoreValue.toFixed(1)
               )}`}</h1>

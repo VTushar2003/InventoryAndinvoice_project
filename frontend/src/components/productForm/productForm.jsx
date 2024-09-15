@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Button, Modal, Input, Form } from "antd";
+import { Button, Modal, Input, Form, Select } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
+import { getSuppliers } from './../../services/SuppliersService';
 
 const { TextArea } = Input;
 
@@ -18,6 +19,25 @@ const ProductForm = ({
   const [open, setOpen] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [form] = Form.useForm();
+  const [supplier, setSupplier] = useState([]);
+
+
+
+  useEffect(() => {
+    const SupplierDets = async () => {
+      try {
+        const response = await getSuppliers();
+        if (response) {
+          setSupplier(response);
+        } else {
+          throw new Error("Failed to fetch customers");
+        }
+      } catch (error) {
+        console.error("Error fetching customers:", error);
+      }
+    }
+    SupplierDets();
+  }, [])
 
   useEffect(() => {
     if (open) {
@@ -100,6 +120,7 @@ const ProductForm = ({
           <Form.Item
             label="Upload Image"
             name="image"
+            required
             valuePropName="fileList"
             getValueFromEvent={(e) => e.fileList}
             rules={[{ validator: customRules.validateImage }]}
@@ -199,13 +220,21 @@ const ProductForm = ({
             name="supplier"
             rules={[{ required: true }]}
           >
-            <Input
-              placeholder="Enter Supplier Name"
-              type="text"
-              name="supplier"
-              value={product.supplier}
-              onChange={handleInputchange}
-            />
+            <Select
+              showSearch
+              placeholder="Search to Select"
+              optionFilterProp="children"
+              filterOption={(input, option) =>
+                option.children.toLowerCase().includes(input.toLowerCase())
+              }
+              onChange={(value) => handleInputchange({ target: { name: "supplier", value } })}
+            >
+              {supplier.map((suppliers) => (
+                <Select.Option key={suppliers._id} value={suppliers.SupplierName}>
+                  {suppliers.SupplierName}
+                </Select.Option>
+              ))}
+            </Select>
           </Form.Item>
           <Form.Item
             label="Description"

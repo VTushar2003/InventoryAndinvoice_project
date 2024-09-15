@@ -21,6 +21,7 @@ const initialState = {
   SupplierAddress: "",
 };
 const SupplierData = () => {
+
   const [supplier, setSupplier] = useState([]);
 
   //replace blank space with null
@@ -46,7 +47,7 @@ const SupplierData = () => {
       } else {
         console.error("Unexpected response structure:", res);
       }
-    } catch (error) {}
+    } catch (error) { }
   };
 
   useEffect(() => {
@@ -113,12 +114,13 @@ const SupplierData = () => {
   };
 
   //edit supplier
+  const [modal, setModal] = useState(false);
   const [editing, setEditing] = useState(null);
   const editSupplierData = async (supplierData) => {
     try {
       await updateSupplier(editing._id, supplierData);
       console.log(supplierData);
-      setViewModalVisible(false);
+      setModal(false);
       getAllSuppliers();
     } catch (error) {
       console.error("Error updating supplier:", error);
@@ -177,7 +179,7 @@ const SupplierData = () => {
             className="hover:text-blue-500"
             onClick={() => {
               setEditing(record);
-              setViewModalVisible(true);
+              setModal(true);
             }}
           >
             <EditOutlined />
@@ -229,9 +231,9 @@ const SupplierData = () => {
       )}
       {editing && (
         <EditSupplier
-          visible={viewModalVisible}
+          visible={modal}
           onClose={() => {
-            setViewModalVisible(false);
+            setModal(false);
           }}
           edit={editing}
           onSubmit={editSupplierData}

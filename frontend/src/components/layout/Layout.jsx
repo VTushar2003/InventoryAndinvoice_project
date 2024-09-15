@@ -94,10 +94,10 @@ const DefaultLayout = ({ children }) => {
           key: "/Purchases/Suppliers",
           label: <Link to="/Suppliers">Suppliers</Link>,
         },
-        {
-          key: "/Purchases/Purchase Order",
-          label: <Link to="/PurchaseOrder">Purchase order</Link>,
-        },
+        /*  {
+           key: "/Purchases/Purchase Order",
+           label: <Link to="/PurchaseOrder">Purchase order</Link>,
+         }, */
       ],
     },
     user && user.role === "admin" && {

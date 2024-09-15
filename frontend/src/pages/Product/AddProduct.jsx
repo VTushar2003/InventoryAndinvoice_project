@@ -37,18 +37,29 @@ const AddProduct = ({ onProductAdded }) => {
     getexsistingProducts();
   }, [dispatch]);
 
+
+  const validateImageExtension = (file) => {
+    const allowedExtensions = ['jpg', 'jpeg', 'png'];
+    const fileExtension = file.name.split('.').pop().toLowerCase();
+
+    return allowedExtensions.includes(fileExtension);
+  };
+
   const handleInputchange = (e) => {
     const { name, value } = e.target;
     setProduct({ ...product, [name]: value });
   };
 
   const handleImageChange = (e) => {
-    if (e.target.files) {
-      const file = e.target.files[0];
-      setProductImage(file);
-    }
-  };
+    const file = e.target.files[0];
 
+    if (!validateImageExtension(file)) {
+      toast.error('Choose Correct File Format');
+      e.target.value = ''; // Reset the file input
+      return;
+    }
+    setProductImage(file);
+  };
   const isProductIdUnique = (productId) => {
     return !existingProducts.some((product) => product.productId === productId);
   };
@@ -58,6 +69,7 @@ const AddProduct = ({ onProductAdded }) => {
       toast.error("Product ID must be unique");
       return;
     }
+    debugger;
     const formData = new FormData();
     formData.append("image", productImage ? productImage : null);
     formData.append("productId", productId);
