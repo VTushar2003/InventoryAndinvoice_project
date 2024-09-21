@@ -50,7 +50,7 @@ app.use(errorMiddleWare);
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
-    app.listen(APP_PORT, "0.0.0.0", () => {
+    app.listen(APP_PORT, () => {
       // Bind to all IP addresses
       console.log(`Server running on port ${APP_PORT}`);
     });
