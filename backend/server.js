@@ -14,15 +14,10 @@ const customerRouter = require("./routes/customerRoute");
 const supplierRoute = require("./routes/supplierRoute");
 const purchaseOrderRouter = require("./routes/purchaseOrderRoute");
 
-//middlewares
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173",
-      "http://localhost:5174",
-      "https://inventra-brown.vercel.app",
-    ],
-    credentials: true,
+    origin: "*", // Allow access from any domain
+    credentials: true, // If you're using cookies with cross-origin
   })
 );
 app.use(express.json());
@@ -47,11 +42,13 @@ app.get("/", (req, res) => {
 app.use(errorMiddleWare);
 //connect to mongoDB
 //start server at port 3000
+//connect to mongoDB and start server
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
-    app.listen(APP_PORT, () => {
-      console.log(`running ${APP_PORT}`);
+    app.listen(APP_PORT, "0.0.0.0", () => {
+      // Bind to all IP addresses
+      console.log(`Server running on port ${APP_PORT}`);
     });
   })
   .catch((err) => console.log(`something went worng ${err}`));
