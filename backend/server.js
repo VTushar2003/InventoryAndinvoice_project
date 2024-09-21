@@ -16,7 +16,7 @@ const purchaseOrderRouter = require("./routes/purchaseOrderRoute");
 
 app.use(
   cors({
-    origin: "*", // Allow access from any domain
+    origin: "https://inventra-inventory.vercel.app/", // Allow access from any domain
     credentials: true, // If you're using cookies with cross-origin
   })
 );
