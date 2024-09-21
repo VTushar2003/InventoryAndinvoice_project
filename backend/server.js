@@ -16,7 +16,7 @@ const purchaseOrderRouter = require("./routes/purchaseOrderRoute");
 
 app.use(
   cors({
-    origin: ["http://localhost:5173", "https://inventra-inventory.vercel.app"],
+    origin: ["http://localhost:5173"],
     credentials: true,
   })
 );
@@ -27,6 +27,10 @@ app.use(bodyParser.json());
 app.use("/public", express.static(path.join(__dirname, "public")));
 app.use("/upload", express.static(path.join(__dirname, "upload")));
 
+// Health Check Route
+app.get("/health", (req, res) => {
+  res.status(200).send("Server is healthy");
+});
 //route middleware
 app.use("/api/usersDetails", router);
 app.use("/api/products", productRouter);
@@ -41,7 +45,7 @@ app.get("/", (req, res) => {
 //error middleware
 app.use(errorMiddleWare);
 //connect to mongoDB
-//start server at port 3000
+
 //connect to mongoDB and start server
 mongoose
   .connect(process.env.MONGO_URI)
