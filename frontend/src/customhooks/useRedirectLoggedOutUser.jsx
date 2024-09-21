@@ -4,6 +4,7 @@ import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { SET_LOGIN } from '../redux/auth/AuthReducer';
+import { api_url } from './../App';
 
 const useRedirectLoggedOutUser = (path) => {
   const navigate = useNavigate();
@@ -11,7 +12,7 @@ const useRedirectLoggedOutUser = (path) => {
 
   const getLoginStatus = useCallback(async () => {
     try {
-      const res = await axios.get('http://localhost:3000/api/usersDetails/LoggedIn');
+      const res = await axios.get(`${api_url}/api/usersDetails/LoggedIn`);
       return res.data.LoggedIn;
     } catch (error) {
       const message =

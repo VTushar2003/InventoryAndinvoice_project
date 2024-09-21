@@ -1,7 +1,7 @@
 import axios from "axios";
 import toast from "react-hot-toast";
 
-export const BACKEND_URL = "http://localhost:3000/api/PurchaseOrder";
+export const BACKEND_URL = "/api/PurchaseOrder";
 
 //create Purchase order
 export const createPurchaseorder = async (purchaseData) => {

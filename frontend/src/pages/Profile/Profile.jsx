@@ -5,6 +5,7 @@ import { getUser } from "../../services/Authservice";
 import { SET_NAME, SET_USER } from "../../redux/auth/AuthReducer";
 import { Card, Col, Descriptions, Image, Row } from "antd";
 import toast from "react-hot-toast";
+import { api_url } from "../../App";
 
 const Profile = () => {
   const dispatch = useDispatch();
@@ -27,7 +28,7 @@ const Profile = () => {
     getUserData();
   }, [dispatch]);
 
-  const imageSrc = `http://localhost:3000/public/${profile?.photo}`;
+  const imageSrc = `${api_url}/public/${profile?.photo}`;
   return (
     <DefaultLayout>
       {!profile == null ? (

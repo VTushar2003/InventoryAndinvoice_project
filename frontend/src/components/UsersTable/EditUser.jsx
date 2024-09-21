@@ -1,6 +1,7 @@
 import { Button, Form, Input, Modal, Select, Upload } from "antd";
 import React, { useEffect, useState } from "react";
 import { UploadOutlined } from "@ant-design/icons";
+import { api_url } from './../../App';
 const { Option } = Select;
 
 const EditUser = ({ visible, onClose, onSubmit, user }) => {
@@ -15,7 +16,7 @@ const EditUser = ({ visible, onClose, onSubmit, user }) => {
           {
             name: user.photo,
             status: "done",
-            thumbUrl: `http://localhost:3000/public/${user.photo}`,
+            thumbUrl: `${api_url}/public/${user.photo}`,
           },
         ]);
       }

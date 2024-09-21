@@ -21,6 +21,8 @@ import PurchaseOrder from "./pages/Purchases/PurchaseOrder";
 axios.defaults.withCredentials = true;
 import { QueryClient, QueryClientProvider } from 'react-query';
 
+export const api_url = import.meta.env.VITE_API_URL
+
 const App = () => {
   const dispatch = useDispatch();
 

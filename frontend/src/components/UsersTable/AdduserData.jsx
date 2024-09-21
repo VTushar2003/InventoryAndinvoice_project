@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 import AddUser from "./AddUser";
+import { api_url } from './../../App';
 
 const initialState = {
   name: "",
@@ -37,7 +38,7 @@ const AdduserData = ({ onUserAdded }) => {
     };
     try {
       const res = await axios.post(
-        "http://localhost:3000/api/usersDetails/createUser",
+        `${api_url}/api/usersDetails/createUser`,
         userData
       );
       toast.success("user created successfully");
@@ -48,12 +49,12 @@ const AdduserData = ({ onUserAdded }) => {
     }
   };
   return <>
-  <AddUser
-    user = {user}
-    handleInputChange={handleInputchange}
-    handleRoleChange = {handleRoleChange}
-    CreateUser={addUser}
-  />
+    <AddUser
+      user={user}
+      handleInputChange={handleInputchange}
+      handleRoleChange={handleRoleChange}
+      CreateUser={addUser}
+    />
   </>;
 };
 

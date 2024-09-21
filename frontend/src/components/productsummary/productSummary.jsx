@@ -7,6 +7,7 @@ import {
   MdOutlineShoppingCart,
 } from "react-icons/md";
 import axios from "axios";
+import { api_url } from "../../App";
 
 // Format Amount
 const formatNumbers = (x) => {
@@ -18,12 +19,11 @@ const ProductSummary = () => {
   const [totalStoreValue, setTotalStoreValue] = useState(0);
   const [totalCategories, setTotalCategories] = useState(0);
   const [outOfStock, setOutOfStock] = useState(0);
-  const url = "http://localhost:3000/";
 
   useEffect(() => {
     const getStatistics = async () => {
       try {
-        const res = await axios.get(`${url}api/products/`);
+        const res = await axios.get(`${api_url}/api/products/`);
         const products = res.data;
 
         setTotalProducts(products.length);

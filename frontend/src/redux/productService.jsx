@@ -1,10 +1,10 @@
 import axios from "axios";
+import { api_url } from './../App';
 
-const API_URL = `http://localhost:3000/api/products/`;
 
 // Create New Product
 const createProduct = async (formData) => {
-  const response = await axios.post(API_URL, formData, {
+  const response = await axios.post(`${api_url}/api/products/`, formData, {
     headers: {
       "Content-Type": "multipart/form-data",
     },
@@ -15,23 +15,23 @@ const createProduct = async (formData) => {
 
 // Get all products
 const getProducts = async () => {
-  const response = await axios.get(API_URL);
+  const response = await axios.get(`${api_url}/api/products/`);
   return response.data;
 };
 
 // Delete a Product
 const deleteProduct = async (productId) => {
-  const response = await axios.delete(`${API_URL}deleteProduct/${productId}`);
+  const response = await axios.delete(`${api_url}/api/products/deleteProduct/${productId}`);
   return response.data;
 };
 // Get a Product
 const getProduct = async (productId) => {
-  const response = await axios.get(`${API_URL}${productId}`);
+  const response = await axios.get(`${api_url}/api/products/${productId}`);
   return response.data;
 };
 // Update Product
 const updateProduct = async (productId, formData) => {
-  const response = await axios.put(`${API_URL}${productId}`, formData, {
+  const response = await axios.put(`${api_url}/api/products/${productId}`, formData, {
     headers: {
       "Content-Type": "multipart/form-data",
     },

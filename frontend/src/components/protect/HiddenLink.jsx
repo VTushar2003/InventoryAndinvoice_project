@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { selectIsLoggedIn } from "../../redux/auth/AuthReducer";
 import { useSelector } from "react-redux";
+import { api_url } from './../../App';
 
 export const HideLink = ({ isLoggedIn }) => {
   const res = useSelector(selectIsLoggedIn);
@@ -13,7 +14,7 @@ export const HideLink = ({ isLoggedIn }) => {
       setIsLoading(true);
       try {
         const response = await axios.get(
-          "http://localhost:3000/api/usersDetails/LoggedIn"
+          `${api_url}/api/usersDetails/LoggedIn`
         );
         // ;
         setLoggedInState(response.data.LoggedIn); // Update state
@@ -26,7 +27,7 @@ export const HideLink = ({ isLoggedIn }) => {
 
     fetchData();
   }, []);
- 
+
   const ShowOnLogin = (
     <Link to="/Dashboard">
       <button className="btn font-semibold">Dashboard</button>

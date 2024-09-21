@@ -1,6 +1,7 @@
 import { Drawer, Flex, Modal } from "antd";
 import React, { useEffect, useState } from "react";
 import { Col, Row } from 'antd';
+import { api_url } from "../../App";
 
 const ProductDetails = ({ visible, onClose, product }) => {
 
@@ -22,7 +23,7 @@ const ProductDetails = ({ visible, onClose, product }) => {
             <>
               <img
                 className="w-full h-48 object-contain"
-                src={`http://localhost:3000/upload/${product.image}`}
+                src={`${api_url}/upload/${product.image}`}
                 alt={`product Name:${product.name}`}
               />
             </>

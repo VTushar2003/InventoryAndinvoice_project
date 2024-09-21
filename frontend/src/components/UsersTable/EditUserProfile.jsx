@@ -5,9 +5,8 @@ import { selectUser, updateUserData } from "../../redux/auth/AuthReducer";
 import { useNavigate } from "react-router-dom";
 import { UploadOutlined } from "@ant-design/icons";
 import { Button, Form, Input, Upload } from "antd";
-import { updateUser } from "../../services/Authservice";
 import toast from "react-hot-toast";
-import ChangePassword from "../ChangePassword/ChangePassword";
+import { api_url } from './../../App';
 
 const EditUserProfile = () => {
   const [form] = Form.useForm();
@@ -26,7 +25,7 @@ const EditUserProfile = () => {
           {
             name: user.photo,
             status: "done",
-            thumbUrl: `http://localhost:3000/public/${user.photo}`,
+            thumbUrl: `${api_url}/public/${user.photo}`,
           },
         ]);
       }

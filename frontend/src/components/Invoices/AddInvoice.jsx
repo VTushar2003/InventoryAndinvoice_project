@@ -3,7 +3,7 @@ import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { getCustomers } from "./../../services/CustomerService";
-
+import { api_url } from "../../App";
 const generateInvoiceNumber = () => {
   const randomNumber = Math.floor(100000 + Math.random() * 900000);
   return `IO-${randomNumber}`;
@@ -44,7 +44,7 @@ const AddInvoice = ({ visible, onClose, onSubmit }) => {
 
     const fetchProducts = async () => {
       try {
-        const response = await axios.get(`http://localhost:3000/api/products/`);
+        const response = await axios.get(`${api_url}/api/products/`);
         if (response.data) {
           setProducts(response.data);
           console.log(response.data);

@@ -1,12 +1,12 @@
 import axios from "axios";
 import toast from "react-hot-toast";
+import { api_url } from './../App';
 
-export const BACKEND_URL = "http://localhost:3000/api/Supplier";
 
 //create supplier
 export const createSupplier = async (supplierData) => {
   try {
-    const response = await axios.post(BACKEND_URL, supplierData, {
+    const response = await axios.post(`${api_url}/api/Supplier`, supplierData, {
       headers: {
         "Content-Type": "application/json",
       },
@@ -21,7 +21,7 @@ export const createSupplier = async (supplierData) => {
 // Get all supplier
 export const getSuppliers = async () => {
   try {
-    const response = await axios.get(BACKEND_URL);
+    const response = await axios.get(`${api_url}/api/Supplier`);
     return response.data;
   } catch (error) {
     toast.error("Something Went Wrong!");
@@ -32,7 +32,7 @@ export const getSuppliers = async () => {
 // Get a supplier by ID
 export const getSuppluerById = async (id) => {
   try {
-    const response = await axios.get(`${BACKEND_URL}/${id}`);
+    const response = await axios.get(`${api_url}/api/Supplier/${id}`);
     console.log(response.data);
     return response.data;
   } catch (error) {
@@ -44,7 +44,7 @@ export const getSuppluerById = async (id) => {
 // Update a supplier
 export const updateSupplier = async (id, customerData) => {
   try {
-    const response = await axios.put(`${BACKEND_URL}/${id}`, customerData, {
+    const response = await axios.put(`${api_url}/api/Supplier/${id}`, customerData, {
       headers: {
         "Content-Type": "application/json",
       },
@@ -60,7 +60,7 @@ export const updateSupplier = async (id, customerData) => {
 //delete a supplier
 export const deleteSupplier = async (id) => {
   try {
-    const response = await axios.delete(`${BACKEND_URL}/${id}`);
+    const response = await axios.delete(`${api_url}/api/Supplier/${id}`);
     toast.success("Supplier Deleted Successfully!");
     return response.data;
   } catch (error) {

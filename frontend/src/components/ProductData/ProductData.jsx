@@ -10,11 +10,12 @@ import AddProduct from "../../pages/Product/AddProduct";
 import { SearchOutlined } from '@ant-design/icons';
 import Highlighter from 'react-highlight-words';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
+import { api_url } from "../../App";
 
 const { confirm } = Modal;
 
 const fetchProducts = async () => {
-  const response = await axios.get("http://localhost:3000/api/products/");
+  const response = await axios.get(`${api_url}/api/products/`);
   return response.data.map((item, index) => ({
     ...item,
     key: item.productId || index, // Ensure each item has a unique key

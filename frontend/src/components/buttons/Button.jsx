@@ -6,7 +6,7 @@ import { useDispatch } from "react-redux";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { SET_LOGIN, SET_NAME } from "../../redux/auth/AuthReducer";
-
+import { api_url } from "../../App";
 const ButtonInfo = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -22,7 +22,7 @@ const ButtonInfo = () => {
     if (key === "3") {
       // Logout
       try {
-        await axios.get("http://localhost:3000/api/usersDetails/logout");
+        await axios.get(`${api_url}/api/usersDetails/logout`);
         dispatch(SET_LOGIN(false));
         dispatch(SET_NAME(""));
         localStorage.removeItem("name");

@@ -8,6 +8,7 @@ import { selectUser, updateUserData } from "../../redux/auth/AuthReducer";
 import ViewUserDetails from "./ViewUserDetails";
 import toast from "react-hot-toast";
 import AdduserData from "./AdduserData";
+import { api_url } from './../../App';
 
 const UsersTable = () => {
   const dispatch = useDispatch();
@@ -23,11 +24,11 @@ const UsersTable = () => {
   const [editinguser, setEditinguser] = useState(null);
 
   //base user url
-  const UserBaseUrl = "http://localhost:3000/api/usersDetails";
+  const UserBaseUrl = `${api_url}/api/usersDetails`;
 
   //fetch all users from the database
   const getAllUsers = async () => {
-    
+
     try {
       const res = await axios.get(`${UserBaseUrl}/getallusers`);
       const filterCurrentUser = res.data.filter(
@@ -80,7 +81,7 @@ const UsersTable = () => {
   const ViewUserDetail = async (_id) => {
     try {
       const result = await axios.get(
-        `http://localhost:3000/api/usersDetails/getuser/${_id}`
+        `${api_url}/api/usersDetails/getuser/${_id}`
       );
       setViewuser(result.data);
       setViewModalVisible(true);

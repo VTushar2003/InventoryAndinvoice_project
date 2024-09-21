@@ -1,5 +1,6 @@
 import { Modal } from "antd";
 import React, { useEffect, useState } from "react";
+import { api_url } from './../../App';
 
 const ViewUserDetails = ({ visible, onClose, user }) => {
   return (
@@ -10,21 +11,21 @@ const ViewUserDetails = ({ visible, onClose, user }) => {
       onCancel={onClose}
       footer={null}
     >
-        <div className="flex items-center justify-between ">
-          <div className="image h-44 w-[25em] flex">
-            <p className="text-black font-[Sans] font-semibold text-[1rem]">Profile Image:</p>
-            {user.photo && (
-              <>
-                <img
-                  className="w-full h-[30vh] border-4"
-                  src={`http://localhost:3000/public/${user.photo}`}
-                  alt={`user profile:${user.name}`}
-                 /*  style={{ width: "100%" , height : '20vh' , objectFit : 'contain'}} */
-                />
-              </>
-            )}
-          </div>
-          <div key={user._id} className=" font-[Sans] text-[1rem]">
+      <div className="flex items-center justify-between ">
+        <div className="image h-44 w-[25em] flex">
+          <p className="text-black font-[Sans] font-semibold text-[1rem]">Profile Image:</p>
+          {user.photo && (
+            <>
+              <img
+                className="w-full h-[30vh] border-4"
+                src={`${api_url}/public/${user.photo}`}
+                alt={`user profile:${user.name}`}
+              /*  style={{ width: "100%" , height : '20vh' , objectFit : 'contain'}} */
+              />
+            </>
+          )}
+        </div>
+        <div key={user._id} className=" font-[Sans] text-[1rem]">
           <p className="text-black">
             <strong>UserName:</strong> {user.name}
           </p>
@@ -48,8 +49,8 @@ const ViewUserDetails = ({ visible, onClose, user }) => {
             <strong>Updated At:</strong>
             {new Date(user.updatedAt).toLocaleString('en-IN')}
           </p>
-          </div>
         </div>
+      </div>
     </Modal>
   );
 };

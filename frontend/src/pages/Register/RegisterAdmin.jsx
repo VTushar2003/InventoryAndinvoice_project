@@ -6,6 +6,7 @@ import axios from "axios";
 import "./form.css";
 import { toast } from "react-hot-toast";
 import { SET_LOGIN, SET_NAME } from "../../redux/auth/AuthReducer";
+import { api_url } from './../../App';
 
 const { Option } = Select;
 
@@ -34,7 +35,7 @@ const RegisterAdmin = () => {
   const checkEmailExists = async (email) => {
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/usersDetails/CheckEmail",
+        `${api_url}/api/usersDetails/CheckEmail`,
         { email }
       );
       return response.data.exists;
@@ -71,7 +72,7 @@ const RegisterAdmin = () => {
     try {
       debugger;
       const response = await axios.post(
-        "http://localhost:3000/api/usersDetails/register",
+        `${api_url}/api/usersDetails/register`,
         userData
       );
       dispatch(SET_LOGIN(true));

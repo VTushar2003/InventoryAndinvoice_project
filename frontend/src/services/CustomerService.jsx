@@ -1,12 +1,12 @@
 import axios from "axios";
 import toast from "react-hot-toast";
+import { api_url } from "../App";
 
-export const BACKEND_URL = "http://localhost:3000/api/Customer";
 
 //create customer
 export const createCustomer = async (customerData) => {
   try {
-    const response = await axios.post(BACKEND_URL, customerData, {
+    const response = await axios.post(`${api_url}/api/Customer`, customerData, {
       headers: {
         "Content-Type": "application/json",
       },
@@ -21,7 +21,7 @@ export const createCustomer = async (customerData) => {
 // Get all customers
 export const getCustomers = async () => {
   try {
-    const response = await axios.get(BACKEND_URL);
+    const response = await axios.get(`${api_url}/api/Customer`);
     console.log(response.data);
     return response.data;
   } catch (error) {
@@ -33,7 +33,7 @@ export const getCustomers = async () => {
 // Get a customer by ID
 export const getCustomerById = async (id) => {
   try {
-    const response = await axios.get(`${BACKEND_URL}/${id}`);
+    const response = await axios.get(`${api_url}/api/Customer/${id}`);
     console.log(response.data);
     return response.data;
   } catch (error) {
@@ -45,7 +45,7 @@ export const getCustomerById = async (id) => {
 // Update a customer
 export const updateCustomer = async (id, customerData) => {
   try {
-    const response = await axios.put(`${BACKEND_URL}/${id}`, customerData, {
+    const response = await axios.put(`${api_url}/api/Customer/${id}`, customerData, {
       headers: {
         "Content-Type": "application/json",
       },
@@ -61,7 +61,7 @@ export const updateCustomer = async (id, customerData) => {
 //delete a customer
 export const deleteCustomer = async (id) => {
   try {
-    const response = await axios.delete(`${BACKEND_URL}/${id}`);
+    const response = await axios.delete(`${api_url}/api/Customer/${id}`);
     toast.success("Customer Deleted Successfully!");
     return response.data;
   } catch (error) {

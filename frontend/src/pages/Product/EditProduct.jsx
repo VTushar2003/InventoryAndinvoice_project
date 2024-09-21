@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Form, Input, InputNumber, Button, Upload } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
+import { api_url } from "../../App";
 
 const EditProduct = ({ visible, onClose, onSubmit, product }) => {
   const [form] = Form.useForm();
@@ -14,7 +15,7 @@ const EditProduct = ({ visible, onClose, onSubmit, product }) => {
           {
             name: product.image,
             status: "done",
-            thumbUrl : `http://localhost:3000/upload/${product.image}`
+            thumbUrl: `${api_url}/upload/${product.image}`
           },
         ]);
       }
@@ -32,7 +33,7 @@ const EditProduct = ({ visible, onClose, onSubmit, product }) => {
         if (fileList.length > 0 && fileList[0].originFileObj) {
           formData.append("image", fileList[0].originFileObj);
         }
-        onSubmit(product.productId,formData);
+        onSubmit(product.productId, formData);
         setFileList([]);
         form.resetFields();
       })
@@ -76,7 +77,7 @@ const EditProduct = ({ visible, onClose, onSubmit, product }) => {
             { required: true, message: "Please enter the product name!" },
           ]}
         >
-          <Input   />
+          <Input />
         </Form.Item>
         <Form.Item
           name="category"

@@ -10,6 +10,7 @@ import {
 } from "../../redux/auth/AuthReducer";
 import toast from "react-hot-toast";
 import "./form.css";
+import { api_url } from './../../App';
 
 const initialState = {
   email: "",
@@ -51,7 +52,7 @@ const LoginUser = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/usersDetails/login",
+        `${api_url}/api/usersDetails/login`,
         userData
       );
       const data = response.data; // Destructure the data from the response object

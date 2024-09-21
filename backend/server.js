@@ -16,7 +16,7 @@ const purchaseOrderRouter = require("./routes/purchaseOrderRoute");
 
 app.use(
   cors({
-    origin: ["http://localhost:5173"],
+    origin: ["https://inventra-inventory.vercel.app", "http://localhost:5173"],
     credentials: true,
   })
 );
