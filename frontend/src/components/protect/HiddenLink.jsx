@@ -45,9 +45,7 @@ export const HideLink = ({ isLoggedIn }) => {
     </>
   );
 
-  return isLoading ? (
-    <div>Loading please wait</div>
-  ) : loggedInState ? (
+  return loggedInState ? (
     ShowOnLogin
   ) : (
     ShowOnLogout
