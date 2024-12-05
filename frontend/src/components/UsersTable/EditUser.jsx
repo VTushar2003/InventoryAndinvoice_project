@@ -1,7 +1,7 @@
 import { Button, Form, Input, Modal, Select, Upload } from "antd";
 import React, { useEffect, useState } from "react";
 import { UploadOutlined } from "@ant-design/icons";
-import { api_url } from './../../App';
+
 const { Option } = Select;
 
 const EditUser = ({ visible, onClose, onSubmit, user }) => {
@@ -16,7 +16,7 @@ const EditUser = ({ visible, onClose, onSubmit, user }) => {
           {
             name: user.photo,
             status: "done",
-            thumbUrl: `${api_url}/public/${user.photo}`,
+            thumbUrl: `http://localhost:3000/public/${user.photo}`,
           },
         ]);
       }
@@ -46,7 +46,7 @@ const EditUser = ({ visible, onClose, onSubmit, user }) => {
   return (
     <Modal
       open={visible}
-      title="Edit UserDetails"
+      title="Edit User Details"
       onCancel={onClose}
       onOk={handleOk}
       footer={[
@@ -72,7 +72,10 @@ const EditUser = ({ visible, onClose, onSubmit, user }) => {
         <Form.Item
           name="name"
           label="Username"
-          rules={[{ required: true, message: "Please enter the username!" }]}
+          rules={[
+            { required: true, message: "Please enter the username!" },
+            { min: 3, message: "Username must be at least 3 characters long!" },
+          ]}
         >
           <Input />
         </Form.Item>
@@ -81,18 +84,35 @@ const EditUser = ({ visible, onClose, onSubmit, user }) => {
           label="Contact Info"
           rules={[
             { required: true, message: "Please enter the phone number!" },
+            {
+              pattern: /^[0-9]{10}$/,
+              message: "Please enter a valid 10-digit phone number!",
+            },
           ]}
         >
           <Input />
         </Form.Item>
-        <Form.Item name="role" rules={[{ required: true }]} label="User Role">
-          <Select placeholder="Select a role" value={user.role}>
+        <Form.Item
+          name="role"
+          label="User Role"
+          rules={[{ required: true, message: "Please select a role!" }]}
+        >
+          <Select placeholder="Select a role">
             <Option value="admin">Admin</Option>
             <Option value="user">User</Option>
           </Select>
         </Form.Item>
-        <Form.Item name="bio" label="User Bio">
-          <Input.TextArea />
+        <Form.Item
+          name="bio"
+          label="User Bio"
+          rules={[
+            {
+              max: 150,
+              message: "Bio should not exceed 150 characters!",
+            },
+          ]}
+        >
+          <Input.TextArea rows={4} />
         </Form.Item>
       </Form>
     </Modal>
